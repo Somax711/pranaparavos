@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prana para Vos · Alma de Mar — Mariela Gándara</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="topbar">
+    <nav class="nav-shell">
+      <a href="#inicio" class="brand">
+        Prana para Vos
+        <small>· Alma de Mar</small>
+      </a>
+      <input type="checkbox" id="menu-toggle" class="menu-toggle" aria-label="Abrir menú">
+      <label for="menu-toggle" class="menu-toggle-label" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </label>
+      <div class="nav-links">
+        <a href="#inicio">Inicio</a>
+        <a href="#sobre-mi">Sobre mí</a>
+        <a href="#prana">Prana para Vos</a>
+        <a href="#alma-de-mar">Alma de Mar</a>
+        <a href="#youtube">YouTube</a>
+        <a href="#libros">Libros</a>
+        <a href="#galeria">Galería</a>
+        <a href="#recursos">Recursos</a>
+        <a href="#contacto">Contacto</a>
+      </div>
+      <a href="#contacto" class="nav-cta">Reservar sesión</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="inicio">
+      <div class="container">
+        <div class="hero-content">
+          <span class="eyebrow" data-cms="hero-eyebrow">Acompañamiento integral · Gestión cultural comunitaria</span>
+          <h1 data-cms="hero-titulo">Las ideas necesitan <span>tiempo, territorio, escucha</span> y una red que las sostenga.</h1>
+          <p data-cms="hero-descripcion">Mariela Gándara — trabajadora social, artista, terapeuta integrativa y gestora intercultural — te acompaña en procesos de sanación personal y creación colectiva.</p>
+          <div class="hero-actions" data-cms="hero-actions">
+            <a href="#prana" class="btn btn-claro">Explorar acompañamientos</a>
+            <a href="#alma-de-mar" class="btn btn-borde-claro">Conocer proyectos</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SOBRE MÍ ===== -->
+    <section class="seccion" id="sobre-mi">
+      <div class="container">
+        <div class="sobre-grid">
+          <div class="sobre-imagen">
+            <img data-cms="sobre-imagen" src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80" alt="Mariela Gándara">
+          </div>
+          <div class="sobre-texto">
+            <span class="eyebrow" data-cms="sobre-eyebrow">Mi camino</span>
+            <blockquote data-cms="sobre-cita">"Aprendo, camino y creo junto a otros, porque creo en el poder de lo colectivo para transformar realidades."</blockquote>
+            <p data-cms="sobre-p1">Soy Mariela Gándara, trabajadora social, artista, gestora intercultural y terapeuta integrativa. Mi práctica nace del territorio — La Pampa, Argentina — y se nutre de mis vínculos con África (Guinea) y con comunidades originarias.</p>
+            <p data-cms="sobre-p2">Integro el arte, la danza, la escritura, las terapias energéticas, las constelaciones familiares y los registros akáshicos para sostener procesos de transformación personal y colectiva. También acompaño proyectos culturales desde Alma de Mar, mi laboratorio de creación comunitaria.</p>
+            <p data-cms="sobre-p3">Soy autora de los libros "Revolución Consciente con Tierra" (2020) y "Poesía para la Vida Cotidiana" (2024), reconocidos por unanimidad con interés legislativo en La Pampa.</p>
+            <p class="firma" data-cms="sobre-firma">— Mariela Gándara</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PRANA PARA VOS ===== -->
+    <section class="seccion seccion-par" id="prana">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Prana para Vos</span>
+          <h2>Caminos para <span>reconectar</span></h2>
+          <p>Herramientas y acompañamientos para tu bienestar integral: cuerpo, energía, emociones y espíritu.</p>
+        </div>
+        <div class="grid-terapias" id="servicios-container">
+          <!-- Cargado desde Firestore -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ALMA DE MAR ===== -->
+    <section class="seccion" id="alma-de-mar">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Alma de Mar</span>
+          <h2>Laboratorio de proyectos <span>culturales, artísticos y comunitarios</span></h2>
+          <p>Escucho, comprendo, imagino junto, diseño estrategias y camino al lado para que cada idea encuentre su forma de hacerse real.</p>
+        </div>
+        <div class="alma-grid" id="alma-container">
+          <!-- Cargado desde Firestore -->
+        </div>
+        <h3 style="text-align:center; margin-top:3rem; font-family:var(--fuente-titulo); color:var(--color-primario);">Proyectos destacados</h3>
+        <div class="proyectos-destacados" id="proyectos-container">
+          <!-- Cargado desde Firestore -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== YOUTUBE ===== -->
+    <section class="seccion seccion-par" id="youtube">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Canal de YouTube</span>
+          <h2>Videos para <span>acompañar tu práctica</span></h2>
+          <p>Clases, meditaciones, charlas y reflexiones para sostener tu proceso desde casa.</p>
+        </div>
+        <div class="youtube-grid" id="videos-container">
+          <!-- Cargado desde Firestore -->
+        </div>
+        <div style="text-align:center; margin-top:2rem;">
+          <a href="https://www.youtube.com/@pranaparavos" target="_blank" class="btn btn-primario">
+            <i class="fab fa-youtube"></i> Suscribirse al canal
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== LIBROS ===== -->
+    <section class="seccion" id="libros">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Biblioteca de ayuda</span>
+          <h2>Libros para <span>el camino</span></h2>
+          <p>Materiales escritos por Mariela para acompañar la lectura, la reflexión y la práctica diaria.</p>
+        </div>
+        <div class="libros-grid" id="libros-container">
+          <!-- Cargado desde Firestore -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== GALERÍA ===== -->
+    <section class="seccion seccion-par" id="galeria">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Galería</span>
+          <h2>Fotos y <span>arte</span></h2>
+          <p>Imágenes que capturan momentos de talleres, retiros, performances y la vida de Mariela.</p>
+        </div>
+        <div class="galeria-grid" id="galeria-container">
+          <!-- Cargado desde Firestore -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== RECURSOS (reemplaza Retiros) ===== -->
+    <section class="seccion" id="recursos">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Materiales de apoyo</span>
+          <h2>Recursos para tu <span>práctica diaria</span></h2>
+          <p>Descargables gratuitos: guías de meditación, plantillas de escritura terapéutica y audios para acompañar tu proceso.</p>
+        </div>
+        <div class="retiro-grid" id="recursos-container">
+          <!-- Cargado desde Firestore -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TESTIMONIOS ===== -->
+    <section class="seccion seccion-par" id="testimonios">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Voces del camino</span>
+          <h2>Testimonios <span>reales</span></h2>
+        </div>
+        <div class="testi-grid" id="testimonios-container">
+          <!-- Cargado desde Firestore -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CONTACTO ===== -->
+    <section class="cta-section" id="contacto">
+      <div class="container">
+        <span class="eyebrow" style="color:#f2d8b6;">Contacto</span>
+        <h2 data-cms="contacto-titulo">Tu próxima inhalación puede ser el comienzo.</h2>
+        <p data-cms="contacto-descripcion">Si este camino te habla, escribime. Podemos conversar sobre qué espacio te acompaña mejor en este momento.</p>
+        <div class="cta-actions" data-cms="contacto-actions">
+          <a href="https://wa.me/5492302661694" target="_blank" class="btn btn-claro"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="mailto:pranaparavos@gmail.com" class="btn btn-borde-claro"><i class="fas fa-envelope"></i> Email</a>
+        </div>
+        <div class="cta-details" data-cms="contacto-details">
+          <span><i class="fas fa-phone"></i> +54 9 2302 661694</span>
+          <span><i class="fas fa-map-marker-alt"></i> General Pico, La Pampa</span>
+          <span><i class="fab fa-instagram"></i> @pranaparavos</span>
+          <span><i class="fab fa-youtube"></i> /pranaparavos</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <h3>Prana para Vos · Alma de Mar</h3>
+        <p>Acompañamiento integral, gestión cultural comunitaria y arte para la transformación personal y colectiva.</p>
+        <p style="margin-top:0.5rem;"><i class="fas fa-heart" style="color:var(--color-ocre);"></i> Mariela Gándara</p>
+      </div>
+      <div>
+        <h4>Navegación</h4>
+        <a href="#inicio">Inicio</a>
+        <a href="#sobre-mi">Sobre mí</a>
+        <a href="#prana">Prana para Vos</a>
+        <a href="#alma-de-mar">Alma de Mar</a>
+        <a href="#youtube">YouTube</a>
+        <a href="#libros">Libros</a>
+        <a href="#galeria">Galería</a>
+        <a href="#recursos">Recursos</a>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <a data-cms="footer-email" href="mailto:pranaparavos@gmail.com">pranaparavos@gmail.com</a>
+        <a data-cms="footer-whatsapp" href="https://wa.me/5492302661694" target="_blank">WhatsApp</a>
+        <a data-cms="footer-instagram" href="https://instagram.com/pranaparavos" target="_blank">Instagram</a>
+        <a data-cms="footer-youtube" href="https://youtube.com/@pranaparavos" target="_blank">YouTube</a>
+      </div>
+    </div>
+     <div class="admin-acceso">
+    <a href="admin.html" class="admin-link">Administrar contenido</a>
+    </div>
+    <div class="copyright">© 2026 Prana para Vos · Diseño con identidad y territorio</div>
+    
+  </footer>
+  <!-- ===== SCRIPTS ===== -->
+  <script src="js/script.js" defer></script>
+  <script type="module" src="js/firebase-public.js"></script>
+</body>
+</html>
