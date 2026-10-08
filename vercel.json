@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 {
   "cleanUrls": true,
   "rewrites": [
     { "source": "/admin", "destination": "/admin.html" }
   ]
+=======
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin.html" }
+  ]
+>>>>>>> 763b9fe96dd33c59b34b0d3670d8afcc369c61af
 }
