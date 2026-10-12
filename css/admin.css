@@ -1,33 +1,33 @@
-
 /* ============================================================
-   ROOT 
+   ROOT & RESET — Paleta oficial de la imagen PRANA
 ============================================================ */
 :root {
-  --color-tierra: #8B6B4D;
-  --color-mar: #2A4B6E;
-  --color-verde: #7C8F6E;
-  --color-ocre: #D4A373;
-  --color-fondo: #F5F0E6;
-  --color-texto: #2C2C2C;
-  --color-acento: #E07A5F;
-  --color-secundario: #A3B18A;
-  --color-primario: #3B5249;
-  --color-blanco: #FFFFFF;
+  /* Paleta oficial de la imagen PRANA (image_0.png) */
+  --color-primario: #421B65;       /* Morado principal (Identidad) */
+  --color-primario-oscuro: #270C44;/* Morado oscuro (Footer/Sidebar/Login) */
+  --color-acento: #7847A1;         /* Morado suave (Botones/Enlaces/Hover) */
+  --color-acento-claro: #D69DC7;   /* Lila rosa (Detalles/Bordes) */
+  --color-rosa: #F8CDC8;           /* Rosa (Calidez/Amor) */
+  --color-rosa-suave: #F4DCDD;     /* Rosa suave (Feminidad) */
+  --color-ocre: #F3DE96;           /* Dorado (Energía/Luz) */
+  --color-ocre-suave: #E8D49A;     /* Dorado suave (Detalles) */
+  --color-tierra: #8B6B4D;         /* Tierra (Estabilidad) */
+  --color-tierra-suave: #B99A7A;   /* Tierra suave (Calma) */
+  --color-verde: #7C8F6E;          /* Verde (Equilibrio) */
+  --color-verde-suave: #A8B59A;    /* Verde suave (Renovación) */
+  
+  
+  /* Fondos y Textos exactos */
+  --color-fondo: #FFF9F0;          /* Fondo principal (Limpieza) */
+  --color-fondo-rosa: #FDF1F0;     /* Fondo rosa (Suavidad) */
+  --color-fondo-lila: #F6F0F8;     /* Fondo lila (Armonía) */
+  --color-texto: #332B35;          /* Texto principal (Legibilidad) */
+  --color-suave: #6D6370;          /* Texto suave/secundario */
+  --color-blanco: #FFFFFF;         /* Blanco (Pureza) */
+  /* Fuentes */
   --fuente-titulo: 'Cormorant Garamond', serif;
   --fuente-cuerpo: 'Nunito', sans-serif;
 }
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: var(--fuente-cuerpo);
-  background: var(--color-fondo);
-  color: var(--color-texto);
-  line-height: 1.6;
-  min-height: 100vh;
-}
-.hidden { display: none !important; }
-
 /* ============================================================
    BOTONES
 ============================================================ */
@@ -84,7 +84,7 @@ body {
   margin-bottom: 0.2rem;
 }
 .login-sub {
-  color: var(--color-ocre);
+  color: var(-- color-tierra);
   font-size: 0.85rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
