@@ -15,10 +15,14 @@
   --color-verde: #7C8F6E;          /* Verde */
   --color-verde-suave: #A8B59A;    /* Verde suave */
 
-  /* ✅ FONDOS MODIFICADOS: Tonos Cobre, Tierra y Violeta */
+  /* ✅ NUEVO COLOR: Amarillo oscuro para el subtítulo "Alma de Mar" */
+  --color-amarillo-oscuro: #C9A84C; 
+
+  /* ✅ FONDOS: Tonos Cobre, Tierra y Violeta + NUEVO Verde Claro */
   --color-fondo: #F3E8DB;          /* Fondo principal (Cobre/Tierra cálido) */
-  --color-fondo-rosa: #F9E5E0;     /* Fondo rosa (Rosa cálido) */
+  --color-fondo-rosa: #F9E5E0;     /* Fondo rosa */
   --color-fondo-lila: #EDE3F2;     /* Fondo lila (Violeta suave) */
+  --color-fondo-verde: #E8F0E5;    /* ✅ NUEVO: Fondo verde claro para CTA */
 
   --color-texto: #332B35;          /* Texto principal */
   --color-suave: #6D6370;          /* Texto suave/secundario */
@@ -42,7 +46,6 @@
 html { scroll-behavior: smooth; }
 
 body {
-  /* ✅ Fondo general de la web en tono cobre/tierra */
   background-color: var(--color-fondo);
   color: var(--color-texto);
   font-family: var(--fuente-cuerpo);
@@ -163,7 +166,6 @@ img { max-width: 100%; display: block; }
   position: sticky;
   top: 0;
   z-index: 1000;
-  /* ✅ Fondo del navbar en tono cobre/tierra translúcido */
   background: rgba(243, 232, 219, 0.9);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -198,10 +200,12 @@ img { max-width: 100%; display: block; }
 .brand:hover { color: var(--color-acento); transform: scale(1.02); }
 .brand small {
   font-size: 0.9rem;
-  color: var(--color-acento-claro);
-  font-weight: 400;
+  /* ✅ CAMBIO: Color amarillo oscuro/dorado para "Alma de Mar" */
+  color: var(--color-amarillo-oscuro);
+  font-weight: 700; /* Un poco más de peso para que resalte */
   display: block;
   margin-top: -0.3rem;
+  letter-spacing: 0.05em;
 }
 .nav-links { display: flex; align-items: center; gap: 1.5rem; list-style: none; }
 .nav-links a {
@@ -265,7 +269,7 @@ img { max-width: 100%; display: block; }
 }
 
 /* ============================================================
-   HERO — ✅ SIN MODIFICAR: Foto de fondo + Overlay Morado
+   HERO — Sin Modificar: Foto de fondo + Overlay Morado
 ============================================================ */
 .hero {
   position: relative;
@@ -334,10 +338,10 @@ img { max-width: 100%; display: block; }
 .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
 
 /* ============================================================
-   SECCIONES — ✅ Fondos cambiados a tonos cálidos
+   SECCIONES
 ============================================================ */
 .seccion { padding: 5rem 0; }
-.seccion-par { background: var(--color-fondo-lila); } /* Violeta suave */
+.seccion-par { background: var(--color-fondo-lila); }
 
 /* ============================================================
    SOBRE MÍ 
@@ -460,7 +464,7 @@ img { max-width: 100%; display: block; }
               transform var(--dur-fast) var(--ease-spring);
 }
 .card-terapia:hover .card-body .etiquetas span {
-  background: var(--color-fondo-rosa);
+  background: var(--color-fondo-verde); /* ✅ Cambiado a verde claro */
   transform: translateY(-1px);
 }
 .card-terapia .card-footer { padding: 0 1.5rem 1.5rem; }
@@ -672,16 +676,16 @@ img { max-width: 100%; display: block; }
 .libro-card .libro-body h4 { font-family: var(--fuente-titulo); color: var(--color-primario); }
 .libro-card .libro-body .badge {
   display: inline-block;
-  background: var(--color-fondo-rosa);
+  background: var(--color-fondo-verde); /* ✅ Cambiado a verde claro */
   padding: 0.2rem 1rem;
   border-radius: 20px;
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--color-tierra);
+  color: var(--color-primario); /* ✅ Texto en morado para mejor contraste */
   margin-top: 0.5rem;
   transition: background-color var(--dur-base) var(--ease-out-soft);
 }
-.libro-card:hover .libro-body .badge { background: var(--color-rosa-suave); }
+.libro-card:hover .libro-body .badge { background: var(--color-verde-suave); color: #fff; }
 
 /* ============================================================
    GALERÍA
@@ -804,26 +808,27 @@ img { max-width: 100%; display: block; }
 .testi-card:hover span { color: var(--color-primario); }
 
 /* ============================================================
-   CTA CONTACTO
+   CTA CONTACTO — ✅ FONDO VERDE CLARO
 ============================================================ */
 .cta-section {
   position: relative;
-  background: var(--color-fondo-rosa);
+  /* ✅ CAMBIO: Fondo verde claro en lugar de rosa */
+  background: var(--color-fondo-verde);
   border-radius: 30px;
   padding: 3rem 2rem;
   text-align: center;
   color: var(--color-texto);
-  box-shadow: 0 20px 45px rgba(139, 107, 77, 0.15);
+  box-shadow: 0 20px 45px rgba(124, 143, 110, 0.15);
   margin: 3rem 1.5rem;
   overflow: hidden;
   isolation: isolate;
-  border: 1px solid rgba(139, 107, 77, 0.2);
+  border: 1px solid rgba(124, 143, 110, 0.2);
 }
 .cta-section::before {
   content: "";
   position: absolute;
   inset: -20%;
-  background: radial-gradient(circle at 70% 70%, rgba(139, 107, 77, 0.12), transparent 55%);
+  background: radial-gradient(circle at 70% 70%, rgba(124, 143, 110, 0.12), transparent 55%);
   animation: ctaGlow 12s ease-in-out infinite alternate;
   z-index: -1;
   pointer-events: none;
@@ -858,7 +863,7 @@ img { max-width: 100%; display: block; }
   font-size: 0.95rem;
 }
 .cta-details span {
-  background: rgba(139, 107, 77, 0.12);
+  background: rgba(124, 143, 110, 0.15);
   padding: 0.3rem 1rem;
   border-radius: 999px;
   color: var(--color-primario);
@@ -866,7 +871,7 @@ img { max-width: 100%; display: block; }
               transform var(--dur-fast) var(--ease-spring);
 }
 .cta-details span:hover {
-  background: rgba(139, 107, 77, 0.22);
+  background: rgba(124, 143, 110, 0.25);
   transform: translateY(-2px);
 }
 
