@@ -1,4 +1,4 @@
-
+console.log("1. admin.js se ha cargado");
 /* ============================================================
    IMPORTACIONES FIREBASE (v10 modular)
 ============================================================ */
@@ -519,5 +519,4 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
->>>>>>> 763b9fe96dd33c59b34b0d3670d8afcc369c61af
 }

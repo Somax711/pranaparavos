@@ -99,4 +99,3 @@ document.addEventListener('DOMContentLoaded', function () {
   /* Primera ejecución */
   window.initDynamicListeners();
 });
->>>>>>> 763b9fe96dd33c59b34b0d3670d8afcc369c61af
