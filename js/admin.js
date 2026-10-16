@@ -370,7 +370,6 @@ function fileToDataURL(file) {
 }
 
 async function subirArchivoAFirebase(file, folder, onProgress) {
-  // 1. Intentar primero con Firebase Storage (con timeout de 7s por si el bucket no está creado)
   try {
     const safeName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
     const ref = storageRef(storage, `${folder}/${safeName}`);
@@ -382,9 +381,9 @@ async function subirArchivoAFirebase(file, folder, onProgress) {
     console.warn("Firebase Storage no disponible, guardando PDF directamente en Firestore...", storageErr.message);
   }
 
-  // 2. Respaldo automático en Firebase Firestore (soporta PDFs dividiendo en bloques de 700KB)
+  // 2. Respaldo automático en Firebase Firestore 
   const dataUrl = await fileToDataURL(file);
-  const chunkSize = 700000; // ~700 KB por documento de Firestore (límite de Firestore es 1 MB)
+  const chunkSize = 700000; 
   const totalChunks = Math.ceil(dataUrl.length / chunkSize);
 
   if (totalChunks > 25) {
@@ -410,6 +409,46 @@ async function subirArchivoAFirebase(file, folder, onProgress) {
   }
 
   return `firestore-pdf://${fileId}/${encodeURIComponent(file.name)}`;
+}
+
+
+/* ============================================================
+   COMPRESOR DE IMÁGENES RESPONSIVAS 
+============================================================ */
+function procesarImagenResponsiva(file, maxWidth = 800, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        // Redimensionar proporcionalmente si supera el ancho máximo
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convertir a WebP (o JPEG) optimizado y ligero para Firebase
+        let dataUrl = canvas.toDataURL("image/webp", quality);
+        if (dataUrl.indexOf("data:image/webp") !== 0) {
+          dataUrl = canvas.toDataURL("image/jpeg", quality);
+        }
+        resolve(dataUrl);
+      };
+      img.onerror = () => reject(new Error("No se pudo procesar la imagen seleccionada."));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error("Error al leer el archivo de imagen."));
+    reader.readAsDataURL(file);
+  });
 }
 
 /* ============================================================
@@ -545,14 +584,20 @@ function renderField(field, value = "") {
       </div>`;
   }
 
-  if (field.type === "image") {
+if (field.type === "image") {
     return `
       <div class="field">
-        <label for="f-${field.name}">${field.label}</label>
-        <input type="url" id="f-${field.name}" name="${field.name}" value="${escaped}" placeholder="https://...">
-        <span class="hint"><i class="fas fa-info-circle"></i> Puedes pegar la URL de Unsplash, Drive, etc.</span>
-        <div class="img-preview" id="preview-${field.name}" ${val ? "" : 'style="display:none;"'}>
-          <img src="${escaped}" alt="preview" onerror="this.style.display='none'">
+        <label for="img-file-${field.name}">${field.label}</label>
+        <input type="file" id="img-file-${field.name}" data-img-target="${field.name}" accept="image/*"
+               style="margin-bottom:0.5rem; padding:0.4rem; border:1px dashed #c5894e; border-radius:8px; width:100%; background:#fffdf9; cursor:pointer;">
+        <input type="text" id="f-${field.name}" name="${field.name}" value="${escaped}" placeholder="Sube una imagen arriba o pega una URL (https://...)">
+        <span class="hint" id="img-status-${field.name}">
+          <i class="fas fa-image"></i> Selecciona una imagen de tu dispositivo (se optimizará automáticamente) o pega un enlace.
+        </span>
+        <div class="img-preview" id="preview-${field.name}" style="${val ? "display:block;" : "display:none;"} margin-top:0.6rem;">
+          <img src="${escaped}" alt="Vista previa"
+               style="width:100%; max-width:160px; aspect-ratio:3/4; object-fit:cover; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.12);"
+               onerror="this.style.display='none'">
         </div>
       </div>`;
   }
@@ -572,10 +617,46 @@ function renderField(field, value = "") {
     </div>`;
 }
 
-/* Previsualización de imágenes en tiempo real */
+/* Subida y compresión automática al elegir imagen desde el dispositivo */
+document.addEventListener("change", async (e) => {
+  const fileInput = e.target;
+  if (fileInput.type !== "file" || !fileInput.dataset.imgTarget) return;
+
+  const fieldName = fileInput.dataset.imgTarget;
+  const file = fileInput.files?.[0];
+  if (!file) return;
+
+  const hiddenInput = document.getElementById(`f-${fieldName}`);
+  const preview = document.getElementById(`preview-${fieldName}`);
+  const statusEl = document.getElementById(`img-status-${fieldName}`);
+
+  try {
+    if (statusEl) {
+      statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Optimizando imagen para web...`;
+    }
+    const maxW = fieldName === "imagen_fondo" ? 1200 : 600;
+    const optimizedDataUrl = await procesarImagenResponsiva(file, maxW, 0.82);
+
+    if (hiddenInput) hiddenInput.value = optimizedDataUrl;
+    if (preview) {
+      const img = preview.querySelector("img");
+      preview.style.display = "block";
+      img.src = optimizedDataUrl;
+      img.style.display = "block";
+    }
+    if (statusEl) {
+      statusEl.innerHTML = `<i class="fas fa-check-circle" style="color:#3B5249;"></i> Imagen "${escapeHtml(file.name)}" lista y optimizada. Dale a Guardar.`;
+    }
+  } catch (err) {
+    console.error(err);
+    showToast("Error al procesar la imagen: " + err.message, "error");
+  }
+});
+
+/* Previsualización si el usuario pega una URL manualmente */
 document.addEventListener("input", (e) => {
   const input = e.target;
-  if (input.type !== "url" || !input.name) return;
+  if (!input.name || !input.id?.startsWith("f-")) return;
   const preview = document.getElementById(`preview-${input.name}`);
   if (!preview) return;
   const img = preview.querySelector("img");

@@ -246,6 +246,9 @@ async function cargarVideos() {
 /* ============================================================
    LIBROS
 ============================================================ */
+/* ============================================================
+   LIBROS
+============================================================ */
 async function cargarLibros() {
   const libros = await fetchCollection("libros");
   const cont = $("#libros-container");
@@ -253,24 +256,30 @@ async function cargarLibros() {
 
   cont.innerHTML = libros.map(l => {
     const enlace = l.enlace || "#";
+    const nombreDescarga = `${l.nombre_archivo || l.titulo || "libro"}.pdf`;
     const esFirestorePdf = enlace.startsWith("firestore-pdf://");
+
     const botonHtml = esFirestorePdf
       ? `<a href="#" data-firestore-pdf="${enlace}" class="btn btn-primario" style="padding:0.4rem 1.2rem; font-size:0.8rem;">
            <i class="fas fa-download"></i> Descargar PDF
          </a>`
-      : `<a href="${enlace}" target="_blank" rel="noopener" download="${l.nombre_archivo || l.titulo || 'libro'}.pdf" class="btn btn-primario" style="padding:0.4rem 1.2rem; font-size:0.8rem;">
+      : `<a href="${enlace}" target="_blank" rel="noopener" download="${nombreDescarga}" class="btn btn-primario" style="padding:0.4rem 1.2rem; font-size:0.8rem;">
            <i class="fas fa-download"></i> Descargar PDF
          </a>`;
 
+    const badgeHtml = l.badge
+      ? `<span class="badge">⭐ ${l.badge}</span>`
+      : "";
+
     return `
       <div class="libro-card">
-        <div class="libro-portada">
-          <img src="${l.imagen || ''}" alt="${l.titulo || ''}">
+        <div class="libro-portada" style="width:100%; max-width:180px; margin:0 auto 1rem; aspect-ratio:3/4; overflow:hidden; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.1);">
+          <img src="${l.imagen || ""}" alt="${l.titulo || ""}" loading="lazy" style="width:100%; height:100%; object-fit:cover; display:block;">
         </div>
         <div class="libro-body">
-          <h4>${l.titulo || ''}</h4>
-          <p>${l.descripcion || ''}</p>
-          ${l.badge ? `<span class="badge">⭐ ${l.badge}</span>` : ""}
+          <h4>${l.titulo || ""}</h4>
+          <p>${l.descripcion || ""}</p>
+          ${badgeHtml}
           <div style="margin-top:0.8rem;">
             ${botonHtml}
           </div>
@@ -279,7 +288,6 @@ async function cargarLibros() {
     `;
   }).join("");
 }
-
 /* ============================================================
    GALERÍA
 ============================================================ */
