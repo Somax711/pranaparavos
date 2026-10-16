@@ -1,40 +1,12 @@
-
-/* ============================================================
-   INICIALIZACIÓN
-============================================================ */
-document.addEventListener("DOMContentLoaded", () => {
-  Promise.allSettled([
-    cargarHero(),
-    cargarSobreMi(),
-    cargarServicios(),
-    cargarAlmaItems(),
-    cargarProyectos(),
-    cargarVideos(),
-    cargarLibros(),
-    cargarGaleria(),
-    cargarRecursos(),
-    cargarTestimonios(),
-    cargarContacto()
-  ]).then(results => {
-    results.forEach((r, i) => {
-      if (r.status === "rejected") console.warn("Sección", i, "falló:", r.reason);
-    });
-    if (typeof window.initDynamicListeners === "function") {
-      window.initDynamicListeners();
-    }
-  });
-});
 import { db } from "./firebase-config.js";
 import {
-  doc, getDoc,collection, getDocs, query, orderBy
-}
-
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  doc, getDoc, collection, getDocs, query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 /* ============================================================
    UTILIDADES
 ============================================================ */
-const $  = (sel) => document.querySelector(sel);
+const $ = (sel) => document.querySelector(sel);
 
 function setText(selector, value) {
   const el = typeof selector === "string" ? $(selector) : selector;
@@ -70,6 +42,65 @@ async function fetchConfig(name) {
     return null;
   }
 }
+
+/* ============================================================
+   DESCARGA DIRECTA DE PDF DESDE FIREBASE
+============================================================ */
+async function descargarPdfDesdeFirestore(enlace, btnEl) {
+  const textoOriginal = btnEl.innerHTML;
+  try {
+    btnEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Preparando PDF...`;
+    btnEl.style.pointerEvents = "none";
+
+    // Formato: firestore-pdf://pdf_123456789/nombre.pdf
+    const sinPrefijo = enlace.replace("firestore-pdf://", "");
+    const [fileId, nombreCodificado] = sinPrefijo.split("/");
+    const metaSnap = await getDoc(doc(db, "archivos_pdf", fileId));
+    if (!metaSnap.exists()) throw new Error("El archivo no se encontró en Firebase.");
+
+    const meta = metaSnap.data();
+    const totalChunks = meta.totalChunks || 0;
+    let dataUrlCompleta = "";
+
+    for (let i = 0; i < totalChunks; i++) {
+      const partSnap = await getDoc(doc(db, "archivos_pdf", `${fileId}_part_${i}`));
+      if (partSnap.exists()) {
+        dataUrlCompleta += partSnap.data().data;
+      }
+    }
+
+    const res = await fetch(dataUrlCompleta);
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = decodeURIComponent(nombreCodificado || meta.nombre || "libro.pdf");
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+
+    btnEl.innerHTML = `<i class="fas fa-check"></i> ¡Descargado!`;
+    setTimeout(() => {
+      btnEl.innerHTML = textoOriginal;
+      btnEl.style.pointerEvents = "auto";
+    }, 2500);
+  } catch (err) {
+    console.error("Error al descargar PDF:", err);
+    alert("Hubo un problema al descargar el archivo. Intenta nuevamente.");
+    btnEl.innerHTML = textoOriginal;
+    btnEl.style.pointerEvents = "auto";
+  }
+}
+
+// Escuchar clics en botones con archivos guardados en Firestore
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-firestore-pdf]");
+  if (!btn) return;
+  e.preventDefault();
+  descargarPdfDesdeFirestore(btn.dataset.firestorePdf, btn);
+});
 
 /* ============================================================
    HERO
@@ -170,7 +201,7 @@ async function cargarAlmaItems() {
 }
 
 /* ============================================================
-  PROYECTOS
+   PROYECTOS
 ============================================================ */
 async function cargarProyectos() {
   const proyectos = await fetchCollection("proyectos");
@@ -220,28 +251,37 @@ async function cargarLibros() {
   const cont = $("#libros-container");
   if (!cont || !libros.length) return;
 
-  cont.innerHTML = libros.map(l => `
-    <div class="libro-card">
-      <div class="libro-portada">
-        <img src="${l.imagen || ''}" alt="${l.titulo || ''}">
-      </div>
-      <div class="libro-body">
-        <h4>${l.titulo || ''}</h4>
-        <p>${l.descripcion || ''}</p>
-        ${l.badge ? `<span class="badge">⭐ ${l.badge}</span>` : ""}
-        <div style="margin-top:0.8rem;">
-          <a href="${l.enlace || '#'}" class="btn btn-primario"
-             style="padding:0.4rem 1.2rem; font-size:0.8rem;">
-            Descargar PDF
-          </a>
+  cont.innerHTML = libros.map(l => {
+    const enlace = l.enlace || "#";
+    const esFirestorePdf = enlace.startsWith("firestore-pdf://");
+    const botonHtml = esFirestorePdf
+      ? `<a href="#" data-firestore-pdf="${enlace}" class="btn btn-primario" style="padding:0.4rem 1.2rem; font-size:0.8rem;">
+           <i class="fas fa-download"></i> Descargar PDF
+         </a>`
+      : `<a href="${enlace}" target="_blank" rel="noopener" download="${l.nombre_archivo || l.titulo || 'libro'}.pdf" class="btn btn-primario" style="padding:0.4rem 1.2rem; font-size:0.8rem;">
+           <i class="fas fa-download"></i> Descargar PDF
+         </a>`;
+
+    return `
+      <div class="libro-card">
+        <div class="libro-portada">
+          <img src="${l.imagen || ''}" alt="${l.titulo || ''}">
+        </div>
+        <div class="libro-body">
+          <h4>${l.titulo || ''}</h4>
+          <p>${l.descripcion || ''}</p>
+          ${l.badge ? `<span class="badge">⭐ ${l.badge}</span>` : ""}
+          <div style="margin-top:0.8rem;">
+            ${botonHtml}
+          </div>
         </div>
       </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 /* ============================================================
-  GALERÍA
+   GALERÍA
 ============================================================ */
 async function cargarGaleria() {
   const fotos = await fetchCollection("galeria");
@@ -263,22 +303,33 @@ async function cargarRecursos() {
   const cont = $("#recursos-container");
   if (!cont || !recursos.length) return;
 
-  cont.innerHTML = recursos.map(r => `
-    <div class="retiro-card">
-      <i class="fas ${r.icono || 'fa-download'}"></i>
-      <h4>${r.titulo || ''}</h4>
-      <p>${r.descripcion || ''}</p>
-      ${r.enlace ? `
-        <a href="${r.enlace}" target="_blank" class="btn btn-acento"
-           style="margin-top:0.8rem; padding:0.4rem 1.2rem; font-size:0.8rem;">
-          Descargar <i class="fas fa-download"></i>
-        </a>` : ""}
-    </div>
-  `).join("");
+  cont.innerHTML = recursos.map(r => {
+    const enlace = r.enlace || "";
+    const esFirestorePdf = enlace.startsWith("firestore-pdf://");
+    let botonHtml = "";
+    if (enlace) {
+      botonHtml = esFirestorePdf
+        ? `<a href="#" data-firestore-pdf="${enlace}" class="btn btn-acento" style="margin-top:0.8rem; padding:0.4rem 1.2rem; font-size:0.8rem;">
+             Descargar <i class="fas fa-download"></i>
+           </a>`
+        : `<a href="${enlace}" target="_blank" rel="noopener" download class="btn btn-acento" style="margin-top:0.8rem; padding:0.4rem 1.2rem; font-size:0.8rem;">
+             Descargar <i class="fas fa-download"></i>
+           </a>`;
+    }
+
+    return `
+      <div class="retiro-card">
+        <i class="fas ${r.icono || 'fa-download'}"></i>
+        <h4>${r.titulo || ''}</h4>
+        <p>${r.descripcion || ''}</p>
+        ${botonHtml}
+      </div>
+    `;
+  }).join("");
 }
 
 /* ============================================================
-  TESTIMONIOS
+   TESTIMONIOS
 ============================================================ */
 async function cargarTestimonios() {
   const testis = await fetchCollection("testimonios");
@@ -362,5 +413,4 @@ document.addEventListener("DOMContentLoaded", () => {
       window.initDynamicListeners();
     }
   });
->>>>>>> 763b9fe96dd33c59b34b0d3670d8afcc369c61af
 });

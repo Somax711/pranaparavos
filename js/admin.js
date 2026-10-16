@@ -2,7 +2,7 @@ console.log("1. admin.js se ha cargado");
 /* ============================================================
    IMPORTACIONES FIREBASE (v10 modular)
 ============================================================ */
-import { auth, db } from "./firebase-config.js";
+import { auth, db, storage } from "./firebase-config.js";
 import {
   signInWithEmailAndPassword, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -10,7 +10,9 @@ import {
   doc, getDoc, setDoc, updateDoc, deleteDoc,
   collection, getDocs, addDoc, query, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+import {
+  ref as storageRef, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 let currentUser = null;
 let currentSection = "hero";
@@ -97,7 +99,7 @@ const SCHEMAS = {
     { name: "descripcion", label: "Descripción", type: "textarea" },
     { name: "imagen",      label: "URL de portada", type: "image" },
     { name: "badge",       label: "Etiqueta (ej: Reconocimiento legislativo)", type: "text" },
-    { name: "enlace",      label: "Enlace de descarga", type: "text", default: "#" },
+    { name: "enlace",      label: "Archivo PDF del libro (Subir o pegar enlace)", type: "file", default: "" },
     { name: "orden",       label: "Orden", type: "number", default: 0 }
   ],
   galeria: [
@@ -114,7 +116,7 @@ const SCHEMAS = {
     { name: "titulo",      label: "Título", type: "text" },
     { name: "descripcion", label: "Descripción", type: "textarea" },
     { name: "icono",       label: "Icono (FontAwesome)", type: "text", default: "fa-download" },
-    { name: "enlace",      label: "Enlace de descarga", type: "text" },
+    { name: "enlace",      label: "Archivo descargable (Subir PDF o pegar enlace)", type: "file", default: "" },
     { name: "orden",       label: "Orden", type: "number", default: 0 }
   ]
 };
@@ -356,6 +358,61 @@ function bindCollectionView(sectionKey) {
 }
 
 /* ============================================================
+   SUBIDA DE ARCHIVOS A FIREBASE (Storage con respaldo en Firestore)
+============================================================ */
+function fileToDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function subirArchivoAFirebase(file, folder, onProgress) {
+  // 1. Intentar primero con Firebase Storage (con timeout de 7s por si el bucket no está creado)
+  try {
+    const safeName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const ref = storageRef(storage, `${folder}/${safeName}`);
+    const uploadPromise = uploadBytes(ref, file).then(() => getDownloadURL(ref));
+    const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error("Storage timeout")), 7000));
+    const url = await Promise.race([uploadPromise, timeoutPromise]);
+    return url;
+  } catch (storageErr) {
+    console.warn("Firebase Storage no disponible, guardando PDF directamente en Firestore...", storageErr.message);
+  }
+
+  // 2. Respaldo automático en Firebase Firestore (soporta PDFs dividiendo en bloques de 700KB)
+  const dataUrl = await fileToDataURL(file);
+  const chunkSize = 700000; // ~700 KB por documento de Firestore (límite de Firestore es 1 MB)
+  const totalChunks = Math.ceil(dataUrl.length / chunkSize);
+
+  if (totalChunks > 25) {
+    throw new Error("El archivo PDF supera los 12 MB. Por favor comprime el PDF o usa un enlace externo.");
+  }
+
+  const fileId = `pdf_${Date.now()}`;
+  await setDoc(doc(db, "archivos_pdf", fileId), {
+    nombre: file.name,
+    tipo: file.type || "application/pdf",
+    totalChunks,
+    creado: serverTimestamp()
+  });
+
+  for (let i = 0; i < totalChunks; i++) {
+    if (onProgress) onProgress(Math.round(((i + 1) / totalChunks) * 100));
+    const chunkData = dataUrl.slice(i * chunkSize, (i + 1) * chunkSize);
+    await setDoc(doc(db, "archivos_pdf", `${fileId}_part_${i}`), {
+      fileId,
+      index: i,
+      data: chunkData
+    });
+  }
+
+  return `firestore-pdf://${fileId}/${encodeURIComponent(file.name)}`;
+}
+
+/* ============================================================
    MODAL
 ============================================================ */
 function openModal(sectionKey, item) {
@@ -391,33 +448,56 @@ function openModal(sectionKey, item) {
   overlay.querySelector("#modal-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnHtml = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Guardando...`;
+
     const payload = {};
 
-    schema.forEach(f => {
-      const el = form.querySelector(`[name="${f.name}"]`);
-      if (!el) return;
-      if (f.name === "etiquetas") {
-        payload[f.name] = el.value.split(",").map(s => s.trim()).filter(Boolean);
-      } else if (f.type === "number") {
-        payload[f.name] = Number(el.value) || 0;
-      } else {
-        payload[f.name] = el.value;
-      }
-    });
-
     try {
+      for (const f of schema) {
+        const el = form.querySelector(`[name="${f.name}"]`);
+        if (!el) continue;
+
+        if (f.type === "file") {
+          const fileInput = form.querySelector(`#file-${f.name}`);
+          const file = fileInput?.files?.[0];
+          if (file) {
+            const statusEl = form.querySelector(`#status-${f.name}`);
+            if (statusEl) statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Subiendo "${escapeHtml(file.name)}" a Firebase...`;
+
+            payload[f.name] = await subirArchivoAFirebase(file, sectionKey, (pct) => {
+              if (statusEl) statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Guardando en Firebase (${pct}%)...`;
+            });
+            payload.nombre_archivo = file.name;
+          } else {
+            payload[f.name] = el.value.trim();
+          }
+        } else if (f.name === "etiquetas") {
+          payload[f.name] = el.value.split(",").map(s => s.trim()).filter(Boolean);
+        } else if (f.type === "number") {
+          payload[f.name] = Number(el.value) || 0;
+        } else {
+          payload[f.name] = el.value;
+        }
+      }
+
       if (isEdit) {
         await updateDoc(doc(db, SECTIONS[sectionKey].col, item.id), payload);
-        showToast("Elemento actualizado", "success");
+        showToast("Elemento actualizado correctamente", "success");
       } else {
         payload.creado = serverTimestamp();
         await addDoc(collection(db, SECTIONS[sectionKey].col), payload);
-        showToast("Elemento creado", "success");
+        showToast("Elemento creado y guardado", "success");
       }
       overlay.remove();
       renderSection(sectionKey);
     } catch (err) {
+      console.error(err);
       showToast("Error: " + err.message, "error");
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnHtml;
     }
   });
 }
@@ -449,6 +529,19 @@ function renderField(field, value = "") {
       <div class="field">
         <label for="f-${field.name}">${field.label}</label>
         <textarea id="f-${field.name}" name="${field.name}" rows="3">${escaped}</textarea>
+      </div>`;
+  }
+
+  if (field.type === "file") {
+    const tieneArchivo = Boolean(val && val !== "#");
+    return `
+      <div class="field">
+        <label for="file-${field.name}">${field.label}</label>
+        <input type="file" id="file-${field.name}" accept=".pdf,.epub,.doc,.docx" style="margin-bottom:0.5rem; padding:0.4rem; border:1px dashed #c5894e; border-radius:8px; width:100%; background:#fffdf9; cursor:pointer;">
+        <input type="text" id="f-${field.name}" name="${field.name}" value="${escaped}" placeholder="O pega aquí un enlace directo (https://...)">
+        <span class="hint" id="status-${field.name}">
+          <i class="fas fa-file-pdf"></i> ${tieneArchivo ? "✅ Ya hay un archivo guardado. Sube otro si deseas reemplazarlo." : "Selecciona un archivo PDF desde tu computadora."}
+        </span>
       </div>`;
   }
 
