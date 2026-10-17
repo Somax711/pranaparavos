@@ -1289,3 +1289,171 @@ footer a:hover {
     filter: none !important;
   }
 }
+/* ============================================================
+   FONDO AMBIENTAL ANIMADO — VISIBLE Y CON PRESENCIA
+============================================================ */
+body {
+  position: relative;
+  background-color: #f8f3eb !important;
+}
+
+/* El Hero, CTA y Footer conservan su diseño y tapan el fondo animado */
+.hero,
+.cta-section,
+footer {
+  position: relative;
+  z-index: 2;
+}
+
+/* IMPORTANTE: Hacer transparentes las secciones para que el fondo se vea claro */
+main {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+}
+
+.seccion {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+}
+
+.seccion-par {
+  background: rgba(255, 252, 247, 0.38) !important;
+  backdrop-filter: blur(1px);
+}
+
+/* Lienzo fijo detrás del contenido */
+.prana-ambient-bg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* --- 1. Manchas de Acuarela (Más intensas y definidas) --- */
+.watercolor-Wash {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(45px);
+  opacity: 0.65;
+  mix-blend-mode: multiply;
+  will-change: transform;
+}
+
+.wc-lavanda {
+  width: 550px;
+  height: 550px;
+  top: 4%;
+  left: -100px;
+  background: radial-gradient(circle, #bfa0c2 0%, #dcc6df 55%, transparent 75%);
+  animation: floatWatercolor 20s ease-in-out infinite alternate;
+}
+
+.wc-rosa {
+  width: 500px;
+  height: 500px;
+  top: 38%;
+  right: -90px;
+  background: radial-gradient(circle, #e2b2b8 0%, #f1d4d8 55%, transparent 75%);
+  animation: floatWatercolor 24s ease-in-out infinite alternate-reverse;
+}
+
+.wc-salvia {
+  width: 580px;
+  height: 580px;
+  bottom: -100px;
+  left: 8%;
+  background: radial-gradient(circle, #a8b995 0%, #cfdac2 55%, transparent 75%);
+  animation: floatWatercolor 22s ease-in-out infinite alternate;
+}
+
+.wc-dorado {
+  width: 420px;
+  height: 420px;
+  top: 15%;
+  right: 12%;
+  background: radial-gradient(circle, rgba(212, 163, 115, 0.45) 0%, rgba(242, 216, 182, 0.25) 55%, transparent 75%);
+  animation: floatWatercolor 18s ease-in-out infinite alternate;
+}
+
+/* --- 2. Símbolos Sagrados y Botánicos (Trazos visibles) --- */
+.sacred-symbol {
+  position: absolute;
+  opacity: 0.38; /* Mucho más visible que antes */
+  color: #b58338; /* Dorado ocre intenso */
+  filter: drop-shadow(0 0 8px rgba(181, 131, 56, 0.2));
+  will-change: transform;
+}
+
+.sacred-symbol.lavender-tint {
+  color: #79527e; /* Morado místico visible */
+  opacity: 0.32;
+}
+
+.sacred-symbol.sage-tint {
+  color: #556b47; /* Verde hoja definido */
+  opacity: 0.35;
+}
+
+.spin-slow {
+  animation: sacredRotate 45s linear infinite;
+}
+
+.spin-reverse-slow {
+  animation: sacredRotateReverse 55s linear infinite;
+}
+
+.float-gentle {
+  animation: sacredFloat 9s ease-in-out infinite alternate;
+}
+
+/* --- 3. Destellos Dorados (Prana) más brillantes --- */
+.prana-sparkle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #c8912c 0%, #e6be6a 50%, transparent 100%);
+  box-shadow: 0 0 10px rgba(200, 145, 44, 0.65);
+  opacity: 0;
+  animation: sparkleDrift var(--sparkle-dur, 8s) ease-in-out infinite;
+  animation-delay: var(--sparkle-delay, 0s);
+}
+
+/* --- Animaciones con mayor recorrido --- */
+@keyframes floatWatercolor {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(55px, -40px) scale(1.12); }
+  100% { transform: translate(-35px, 45px) scale(0.94); }
+}
+
+@keyframes sacredRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes sacredRotateReverse {
+  from { transform: rotate(360deg); }
+  to   { transform: rotate(0deg); }
+}
+
+@keyframes sacredFloat {
+  0%   { transform: translateY(0px) rotate(0deg) scale(1); }
+  100% { transform: translateY(-35px) rotate(8deg) scale(1.05); }
+}
+
+@keyframes sparkleDrift {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.5); }
+  40%  { opacity: 0.85; }
+  75%  { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-60px) scale(1.3); }
+}
+
+@media (max-width: 768px) {
+  .sacred-symbol {
+    opacity: 0.26;
+    transform: scale(0.8);
+  }
+}
