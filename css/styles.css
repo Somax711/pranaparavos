@@ -269,7 +269,7 @@ img { max-width: 100%; display: block; }
 }
 
 /* ============================================================
-   HERO — Sin Modificar: Foto de fondo + Overlay Morado
+   HERO 
 ============================================================ */
 .hero {
   position: relative;
@@ -636,57 +636,128 @@ img { max-width: 100%; display: block; }
 /* ============================================================
    LIBROS
 ============================================================ */
+/* ============================================================
+   SECCIÓN LIBROS — DISEÑO EDITORIAL Y RESPONSIVO
+============================================================ */
+
+/* Contenedor en cuadrícula flexible */
 .libros-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 340px));
+  gap: 2.5rem 2rem;
+  justify-content: center;
+  align-items: stretch;
+  margin-top: 2.5rem;
 }
-.libro-card {
-  background: var(--color-blanco);
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 8px 20px rgba(66, 27, 101, 0.06);
-  border: 1px solid rgba(120, 71, 161, 0.08);
-  text-align: center;
-  transition:
-    transform var(--dur-base) var(--ease-out-soft),
-    box-shadow var(--dur-base) var(--ease-out-soft);
-}
-.libro-card:hover {
-  transform: translateY(-8px) scale(1.01);
-  box-shadow: 0 24px 48px rgba(66, 27, 101, 0.12);
-}
-.libro-card .libro-portada {
-  height: 260px;
-  overflow: hidden;
-  background: var(--color-fondo);
-  position: relative;
-}
-.libro-card .libro-portada::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.35) 50%, transparent 60%);
-  transform: translateX(-100%);
-  transition: transform 0.9s var(--ease-out-soft);
-}
-.libro-card:hover .libro-portada::after { transform: translateX(100%); }
-.libro-card .libro-portada img { width: 100%; height: 100%; object-fit: cover; }
-.libro-card .libro-body { padding: 1.2rem 1.5rem 1.5rem; }
-.libro-card .libro-body h4 { font-family: var(--fuente-titulo); color: var(--color-primario); }
-.libro-card .libro-body .badge {
-  display: inline-block;
-  background: var(--color-fondo-verde); /* ✅ Cambiado a verde claro */
-  padding: 0.2rem 1rem;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--color-primario); /* ✅ Texto en morado para mejor contraste */
-  margin-top: 0.5rem;
-  transition: background-color var(--dur-base) var(--ease-out-soft);
-}
-.libro-card:hover .libro-body .badge { background: var(--color-verde-suave); color: #fff; }
 
+/* Tarjeta individual sin fondo blanco pesado */
+.libro-card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  border-radius: 18px;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.libro-card:hover {
+  transform: translateY(-6px);
+}
+
+/* Contenedor de la portada con aspecto editorial */
+.libro-portada {
+  width: 100%;
+  max-width: 210px;
+  aspect-ratio: 3 / 4.2;
+  margin: 0 auto 1.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 
+    0 12px 28px rgba(74, 37, 90, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  background: #fdfbf7;
+}
+
+.libro-card:hover .libro-portada {
+  transform: scale(1.03) rotate(-0.5deg);
+  box-shadow: 
+    0 20px 38px rgba(74, 37, 90, 0.2),
+    0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+.libro-portada img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Cuerpo del libro: flexbox para alinear títulos y descripciones */
+.libro-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+  max-width: 290px;
+}
+
+.libro-body h4 {
+  font-family: var(--fuente-titulo, 'Cormorant Garamond', serif);
+  font-size: 1.45rem;
+  color: var(--color-primario, #3B5249);
+  margin-bottom: 0.6rem;
+  line-height: 1.25;
+}
+
+.libro-body p {
+  font-size: 0.92rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+  flex-grow: 1; /* Empuja el botón siempre al fondo */
+}
+
+/* Botón de descarga parejo */
+.libro-body .btn-primario,
+.libro-body a.btn {
+  align-self: center;
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.6rem;
+  border-radius: 999px;
+  background: var(--color-morado-profundo, #4A255A);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(74, 37, 90, 0.25);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.libro-body .btn-primario:hover,
+.libro-body a.btn:hover {
+  background: var(--color-acento, #2C88A8);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(44, 136, 168, 0.35);
+}
+
+@media (max-width: 640px) {
+  .libros-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .libro-portada {
+    max-width: 190px;
+  }
+}
 /* ============================================================
    GALERÍA
 ============================================================ */
@@ -808,7 +879,7 @@ img { max-width: 100%; display: block; }
 .testi-card:hover span { color: var(--color-primario); }
 
 /* ============================================================
-   CTA CONTACTO — ✅ FONDO VERDE CLARO
+   CTA CONTACTO —  FONDO VERDE CLARO
 ============================================================ */
 .cta-section {
   position: relative;

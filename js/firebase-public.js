@@ -246,9 +246,6 @@ async function cargarVideos() {
 /* ============================================================
    LIBROS
 ============================================================ */
-/* ============================================================
-   LIBROS
-============================================================ */
 async function cargarLibros() {
   const libros = await fetchCollection("libros");
   const cont = $("#libros-container");
@@ -268,12 +265,12 @@ async function cargarLibros() {
          </a>`;
 
     const badgeHtml = l.badge
-      ? `<span class="badge">⭐ ${l.badge}</span>`
+      ? `<span class="badge">⭐ ${l.badge}</span>` 
       : "";
 
     return `
       <div class="libro-card">
-        <div class="libro-portada" style="width:100%; max-width:180px; margin:0 auto 1rem; aspect-ratio:3/4; overflow:hidden; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.1);">
+        <div class="libro-portada" style="width:100%; max-width:200px; margin:0 auto 1rem; aspect-ratio:3/4; overflow:hidden; border-radius:12px; box-shadow:0 8px 20px ;">
           <img src="${l.imagen || ""}" alt="${l.titulo || ""}" loading="lazy" style="width:100%; height:100%; object-fit:cover; display:block;">
         </div>
         <div class="libro-body">
