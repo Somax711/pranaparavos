@@ -217,30 +217,42 @@ async function cargarProyectos() {
 }
 
 /* ============================================================
-   VIDEOS YOUTUBE
+   VIDEOS YOUTUBE (Con extracción automática y miniaturas reales)
 ============================================================ */
+function obtenerIdYouTube(urlOId) {
+  if (!urlOId) return "";
+  const match = urlOId.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+  return match ? match[1] : urlOId.trim();
+}
+
 async function cargarVideos() {
   const videos = await fetchCollection("videos");
   const cont = $("#videos-container");
   if (!cont || !videos.length) return;
 
-  cont.innerHTML = videos.map(v => `
-    <div class="youtube-card">
-      <div class="yt-thumb">
-        <img src="https://img.youtube.com/vi/${v.video_id}/maxresdefault.jpg" alt="${v.titulo || ''}">
-        <div class="play-icon"><i class="fab fa-youtube"></i></div>
-      </div>
-      <div class="yt-body">
-        <h4>${v.titulo || ''}</h4>
-        <p>${v.descripcion || ''}</p>
-        <a href="https://www.youtube.com/watch?v=${v.video_id}" target="_blank"
-           class="btn btn-acento"
-           style="margin-top:0.5rem; padding:0.4rem 1.2rem; font-size:0.8rem;">
-          Ver video <i class="fas fa-play"></i>
+  cont.innerHTML = videos.map(v => {
+    const videoId = obtenerIdYouTube(v.video_id);
+    const urlVideo = `https://www.youtube.com/watch?v=${videoId}`;
+    const thumbUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+
+    return `
+      <div class="youtube-card">
+        <a href="${urlVideo}" target="_blank" rel="noopener" class="yt-thumb" aria-label="Ver video en YouTube">
+          <img src="${thumbUrl}" alt="${v.titulo || 'Video de YouTube'}" loading="lazy" onerror="this.src='https://img.youtube.com/vi/${videoId}/mqdefault.jpg'">
+          <div class="play-icon">
+            <i class="fab fa-youtube"></i>
+          </div>
         </a>
+        <div class="yt-body">
+          <h4>${v.titulo || 'Video sin título'}</h4>
+          <p>${v.descripcion || ''}</p>
+          <a href="${urlVideo}" target="_blank" rel="noopener" class="btn btn-acento yt-btn">
+            Ver video <i class="fas fa-play"></i>
+          </a>
+        </div>
       </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 /* ============================================================
