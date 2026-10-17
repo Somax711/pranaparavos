@@ -312,17 +312,27 @@ function renderCollectionView(sectionKey, docs) {
 
 function renderItemRow(sectionKey, item) {
   const schema = SCHEMAS[sectionKey];
-  const titleField = schema.find(f => f.name === "titulo") || schema[0];
+  const titleField = schema.find(f => f.name === "titulo");
   const descField  = schema.find(f => f.name === "descripcion") || schema.find(f => f.name === "texto");
   const imgField   = schema.find(f => f.type === "image");
   const iconField  = schema.find(f => f.name === "icono");
 
-  const title = item[titleField.name] || "(Sin título)";
-  const desc  = descField ? (item[descField.name] || "") : "";
+  // Si no tiene título (caso de Galería), usamos el texto alternativo o el orden
+  let title = "(Sin título)";
+  if (titleField && item[titleField.name]) {
+    title = item[titleField.name];
+  } else if (sectionKey === "galeria") {
+    title = item.alt ? `Foto: ${item.alt}` : `Imagen de galería (Orden: ${item.orden ?? 0})`;
+  } else if (schema[0] && item[schema[0].name]) {
+    const rawVal = String(item[schema[0].name]);
+    title = rawVal.startsWith("data:image") ? "Imagen cargada" : rawVal;
+  }
+
+  const desc = descField ? (item[descField.name] || "") : (sectionKey === "galeria" && item.alt ? `Texto alt: ${item.alt}` : "");
 
   let thumb;
   if (imgField && item[imgField.name]) {
-    thumb = `<img src="${escapeHtml(item[imgField.name])}" class="item-thumb" alt="">`;
+    thumb = `<img src="${escapeHtml(item[imgField.name])}" class="item-thumb" alt="" style="width:48px; height:48px; object-fit:cover; border-radius:8px;">`;
   } else if (iconField && item[iconField.name]) {
     thumb = `<div class="item-thumb"><i class="fas ${escapeHtml(item[iconField.name])}"></i></div>`;
   } else {
@@ -330,13 +340,13 @@ function renderItemRow(sectionKey, item) {
   }
 
   return `
-    <div class="item-row" data-id="${item.id}">
+    <div class="item-row" data-id="${item.id}" style="display:flex; align-items:center; gap:1rem; padding:0.8rem 1.2rem; background:#fff; border-radius:12px; margin-bottom:0.7rem; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
       ${thumb}
-      <div class="item-info">
-        <h4>${escapeHtml(title)}</h4>
-        <p>${escapeHtml(desc)}</p>
+      <div class="item-info" style="flex:1; overflow:hidden;">
+        <h4 style="margin:0; font-size:0.95rem; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${escapeHtml(title)}</h4>
+        ${desc ? `<p style="margin:0.2rem 0 0; font-size:0.8rem; color:#666;">${escapeHtml(desc)}</p>` : ""}
       </div>
-      <div class="item-actions">
+      <div class="item-actions" style="display:flex; gap:0.5rem;">
         <button class="btn-edit" title="Editar"><i class="fas fa-pen"></i></button>
         <button class="btn-delete" title="Eliminar"><i class="fas fa-trash"></i></button>
       </div>

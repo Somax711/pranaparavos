@@ -285,19 +285,60 @@ async function cargarLibros() {
     `;
   }).join("");
 }
+
 /* ============================================================
-   GALERÍA
+  GALERÍA (Con límite de 20 fotos y botón Ver más)
 ============================================================ */
 async function cargarGaleria() {
   const fotos = await fetchCollection("galeria");
   const cont = $("#galeria-container");
   if (!cont || !fotos.length) return;
 
-  cont.innerHTML = fotos.map(f => `
+  const limiteInicial = 20;
+  let fotosVisibles = 0;
+
+  const renderItemFoto = (f) => `
     <div class="galeria-item">
-      <img src="${f.imagen || ''}" alt="${f.alt || ''}">
+      <img src="${f.imagen || ''}" alt="${f.alt || 'Galería Prana para Vos'}" loading="lazy">
     </div>
-  `).join("");
+  `;
+
+  // Renderizar las primeras 20 fotos
+  const iniciales = fotos.slice(0, limiteInicial);
+  cont.innerHTML = iniciales.map(renderItemFoto).join("");
+  fotosVisibles = iniciales.length;
+
+  const botonPrevio = $("#btn-galeria-ver-mas");
+  if (botonPrevio) botonPrevio.remove();
+
+  if (fotos.length > limiteInicial) {
+    const contenedorBoton = document.createElement("div");
+    contenedorBoton.id = "wrap-galeria-btn";
+    contenedorBoton.style.textAlign = "center";
+    contenedorBoton.style.marginTop = "2.5rem";
+    contenedorBoton.style.width = "100%";
+
+    contenedorBoton.innerHTML = `
+      <button id="btn-galeria-ver-mas" class="btn btn-primario" style="cursor:pointer; padding:0.7rem 2rem;">
+        <i class="fas fa-plus"></i> Ver más fotos (${fotos.length - fotosVisibles} restantes)
+      </button>
+    `;
+
+    cont.parentNode.insertBefore(contenedorBoton, cont.nextSibling);
+
+    const btnVerMas = document.getElementById("btn-galeria-ver-mas");
+    btnVerMas.addEventListener("click", () => {
+      const restantes = fotos.slice(fotosVisibles);
+      const htmlRestantes = restantes.map(renderItemFoto).join("");
+      cont.insertAdjacentHTML("beforeend", htmlRestantes);
+
+      if (typeof window.initDynamicListeners === "function") {
+        window.initDynamicListeners();
+      }
+
+      contenedorBoton.remove();
+    });
+  }
 }
 
 /* ============================================================
