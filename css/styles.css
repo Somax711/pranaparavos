@@ -1457,3 +1457,133 @@ main {
     transform: scale(0.8);
   }
 }
+
+/* Acceso administrativo invisible */
+.admin-stealth {
+  opacity: 0.08;
+  color: inherit;
+  font-size: 0.75rem;
+  text-decoration: none;
+  cursor: default;
+  transition: opacity 0.3s ease;
+  user-select: none;
+}
+
+.admin-stealth:hover {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+/* ============================================================
+   OPTIMIZACIONES DE RESPONSIVIDAD GLOBAL (Mobile-First & Fluid)
+============================================================ */
+
+/*  Prevención estricta de desbordamiento horizontal */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Tipografía fluida para títulos principales */
+.hero-content h1,
+.hero h1 {
+  font-size: clamp(2.1rem, 7vw, 3.8rem) !important;
+  line-height: 1.15;
+  word-break: break-word;
+}
+
+.titulo-seccion h2,
+.section-heading h2 {
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  line-height: 1.2;
+}
+
+/*  Ajuste de contenedores y secciones en pantallas chicas */
+@media (max-width: 900px) {
+  .hero {
+    min-height: auto !important;
+    padding: 6rem 1.2rem 3rem !important;
+    border-radius: 0 0 24px 24px !important;
+    margin: 0 0 1.5rem !important;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .hero-actions .btn,
+  .hero-actions a {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .seccion {
+    padding: 3rem 1.2rem !important;
+  }
+
+  .cta-section {
+    margin: 2rem 1rem !important;
+    padding: 2.5rem 1.2rem !important;
+    border-radius: 20px !important;
+  }
+}
+
+
+/*  Grillas adaptativas (Servicios, Libros, Galería y Videos) */
+@media (max-width: 768px) {
+  .card-grid, 
+  .retreat-grid, 
+  .testimonial-grid, 
+  .method-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.2rem;
+  }
+
+  .video-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .resources-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Libros parejos en vertical */
+  .libros-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem;
+  }
+
+  .libro-portada {
+    max-width: 180px;
+  }
+
+  /* Galería optimizada para teléfonos */
+  .galeria-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Navbar móvil  */
+  .nav-shell {
+    padding: 0.8rem 1.2rem;
+  }
+
+  .brand {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .galeria-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .btn {
+    padding: 0.6rem 1.1rem;
+    font-size: 0.85rem;
+  }
+}

@@ -207,3 +207,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.body.prepend(bgContainer);
 })();
+
+// Atajo secreto: Ctrl + Shift + A para entrar al panel
+document.addEventListener("keydown", (e) => {
+  if (e.ctrlKey && e.shiftKey && (e.key === "A" || e.key === "a")) {
+    e.preventDefault();
+    window.location.href = "admin.html";
+  }
+});
