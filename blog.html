@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitácora y Reflexiones | Prana para Vos</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .articulo-layout {
+      max-width: 820px;
+      margin: 4rem auto 6rem;
+      padding: 0 1.5rem;
+    }
+    .articulo-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .articulo-header h1 {
+      font-family: var(--fuente-titulo, 'Cormorant Garamond', serif);
+      font-size: clamp(2.2rem, 5vw, 3.3rem);
+      color: var(--color-primario, #3B5249);
+      line-height: 1.2;
+      margin: 1rem 0;
+    }
+    .articulo-cover {
+      width: 100%;
+      max-height: 460px;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    }
+    .articulo-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .articulo-texto {
+      font-size: 1.1rem;
+      line-height: 1.9;
+      color: #3b3631;
+      white-space: pre-wrap;
+      background: var(--color-tarjeta, #fffdf9);
+      padding: 2.5rem;
+      border-radius: 20px;
+      border: 1px solid var(--color-borde, #e8dbc8);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    }
+    .btn-volver {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      color: var(--color-primario, #3B5249);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .btn-volver:hover {
+      color: var(--color-acento, #2C88A8);
+    }
+    /* Listado de más artículos al pie */
+    .mas-articulos {
+      margin-top: 4rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--color-borde, #e8dbc8);
+    }
+    .mas-articulos h3 {
+      font-family: var(--fuente-titulo, 'Cormorant Garamond', serif);
+      font-size: 1.8rem;
+      color: var(--color-primario, #3B5249);
+      text-align: center;
+      margin-bottom: 1.8rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de navegación -->
+  <header class="topbar">
+    <nav class="nav-shell">
+      <a href="index.html" class="brand">Prana para Vos</a>
+      <a href="index.html" class="btn btn-primario" style="padding: 0.4rem 1.2rem; font-size: 0.85rem;">
+        ← Volver al inicio
+      </a>
+    </nav>
+  </header>
+
+  <main class="articulo-layout">
+    <a href="index.html" class="btn-volver">← Volver a la página principal</a>
+
+    <article id="vista-articulo">
+      <header class="articulo-header">
+        <span class="blog-tag" id="art-categoria">Bitácora</span>
+        <h1 id="art-titulo">Cargando reflexión...</h1>
+        <span class="blog-date" id="art-fecha"></span>
+      </header>
+
+      <div class="articulo-cover" id="art-img-wrap" style="display: none;">
+        <img id="art-imagen" src="" alt="">
+      </div>
+
+      <div class="articulo-texto" id="art-contenido"></div>
+    </article>
+
+    <!-- Sección para navegar entre todas las reflexiones sin salir de aquí -->
+    <section class="mas-articulos" id="seccion-mas-articulos" style="display: none;">
+      <h3>Otras reflexiones de la bitácora</h3>
+      <div class="blog-grid" id="lista-otros-posts"></div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { db } from "./js/firebase-config.js";
+    import { doc, getDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    async function obtenerTodosLosPosts() {
+      try {
+        const q = query(collection(db, "articulos_blog"), orderBy("orden", "asc"));
+        const snap = await getDocs(q);
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch {
+        const snap = await getDocs(collection(db, "articulos_blog"));
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      }
+    }
+
+    function mostrarPostEnPantalla(data) {
+      document.title = `${data.titulo || "Reflexión"} | Prana para Vos`;
+      document.getElementById("art-titulo").textContent = data.titulo || "(Sin título)";
+      document.getElementById("art-categoria").textContent = data.categoria || "Reflexión";
+      document.getElementById("art-fecha").textContent = data.fecha || "";
+      document.getElementById("art-contenido").textContent = data.contenido || data.resumen || "";
+
+      const imgWrap = document.getElementById("art-img-wrap");
+      const imgEl = document.getElementById("art-imagen");
+      if (data.imagen) {
+        imgEl.src = data.imagen;
+        imgEl.alt = data.titulo || "Imagen de reflexión";
+        imgWrap.style.display = "block";
+      } else {
+        imgWrap.style.display = "none";
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function cargarArticulo() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+
+      try {
+        const todos = await obtenerTodosLosPosts();
+
+        if (!todos.length) {
+          document.getElementById("art-titulo").textContent = "Próximamente nuevas reflexiones";
+          document.getElementById("art-contenido").textContent = "Aún no se han publicado artículos en la bitácora. Puedes crear el primero desde el panel de administración.";
+          return;
+        }
+
+        // Si viene un ID en la URL, buscamos ese post; si no viene ID, mostramos el primero de la lista (sin rebotar al inicio)
+        const postActual = id ? (todos.find(p => p.id === id) || todos[0]) : todos[0];
+        mostrarPostEnPantalla(postActual);
+
+        // Si hay más artículos, los mostramos abajo para seguir leyendo
+        const otros = todos.filter(p => p.id !== postActual.id);
+        const contOtros = document.getElementById("lista-otros-posts");
+        const secOtros = document.getElementById("seccion-mas-articulos");
+
+        if (otros.length > 0 && contOtros && secOtros) {
+          secOtros.style.display = "block";
+          contOtros.innerHTML = otros.map(p => `
+            <article class="blog-card">
+              ${p.imagen ? `<div class="blog-card-img"><img src="${p.imagen}" alt="${p.titulo || ''}" loading="lazy"></div>` : ""}
+              <div class="blog-card-body">
+                <div class="blog-meta">
+                  <span class="blog-tag">${p.categoria || "Reflexión"}</span>
+                  <span class="blog-date">${p.fecha || ""}</span>
+                </div>
+                <h3>${p.titulo || "(Sin título)"}</h3>
+                <p>${p.resumen || ""}</p>
+                <a href="post.html?id=${p.id}" class="btn-leer-post">
+                  Leer reflexión <i class="fas fa-arrow-right"></i>
+                </a>
+              </div>
+            </article>
+          `).join("");
+        }
+      } catch (err) {
+        console.error("Error al cargar post:", err);
+        document.getElementById("art-titulo").textContent = "No se pudo cargar la reflexión";
+      }
+    }
+
+    cargarArticulo();
+  </script>
+</body>
+</html>

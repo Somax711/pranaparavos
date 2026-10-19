@@ -255,16 +255,25 @@ async function cargarVideos() {
   }).join("");
 }
 
-
 /* ============================================================
-   BLOG / BITÁCORA
+   BLOG / BITÁCORA (Lectura en Modal sin saltos de página)
 ============================================================ */
 let articulosBlogCache = [];
 
 async function cargarBlog() {
+  const cont = $("#blog-container") \vert{}\vert{} $("#blog-resumen-container");
+  if (!cont) return;
+
   articulosBlogCache = await fetchCollection("articulos_blog");
-  const cont = $("#blog-container");
-  if (!cont || !articulosBlogCache.length) return;
+
+  if (!articulosBlogCache.length) {
+    cont.innerHTML = `
+      <div style="text-align:center; padding:2rem; grid-column:1/-1; color:#8c827a;">
+        <p>Pronto compartiremos nuevas reflexiones en este espacio.</p>
+      </div>
+    `;
+    return;
+  }
 
   cont.innerHTML = articulosBlogCache.map(post => `
     <article class="blog-card">
@@ -280,7 +289,7 @@ async function cargarBlog() {
         </div>
         <h3>${post.titulo || "(Sin título)"}</h3>
         <p>${post.resumen || ""}</p>
-        <button class="btn-leer-post" data-post-id="${post.id}">
+        <button type="button" class="btn-leer-post" data-post-id="${post.id}">
           Leer reflexión <i class="fas fa-arrow-right"></i>
         </button>
       </div>
@@ -295,72 +304,57 @@ function setupBlogModalListeners() {
   const btnClose = $("#btn-close-blog");
   if (!modal) return;
 
-  // Abrir modal con los datos del artículo seleccionado
+  // Abrir modal evitando saltos de scroll
   document.querySelectorAll(".btn-leer-post").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
       const id = btn.dataset.postId;
       const post = articulosBlogCache.find(p => p.id === id);
       if (!post) return;
 
-      $("#modal-blog-cat").textContent = post.categoria || "Reflexión";
-      $("#modal-blog-title").textContent = post.titulo || "";
-      $("#modal-blog-date").textContent = post.fecha || "";
-      $("#modal-blog-content").textContent = post.contenido || post.resumen || "";
+      setText("#modal-blog-cat", post.categoria || "Reflexión");
+      setText("#modal-blog-title", post.titulo || "");
+      setText("#modal-blog-date", post.fecha || "");
+      setText("#modal-blog-content", post.contenido || post.resumen || "");
 
       const imgWrap = $("#modal-blog-img-wrap");
       const imgEl = $("#modal-blog-img");
-      if (post.imagen) {
-        imgEl.src = post.imagen;
-        imgWrap.style.display = "block";
-      } else {
-        imgWrap.style.display = "none";
+      if (imgWrap && imgEl) {
+        if (post.imagen) {
+          imgEl.src = post.imagen;
+          imgEl.alt = post.titulo || "Imagen de la reflexión";
+          imgWrap.style.display = "block";
+        } else {
+          imgEl.src = "";
+          imgWrap.style.display = "none";
+        }
       }
 
       modal.classList.add("active");
       document.body.style.overflow = "hidden";
-    });
+    };
   });
 
-  const cerrarModal = () => {
+  const cerrarModal = (e) => {
+    if (e) e.preventDefault();
     modal.classList.remove("active");
     document.body.style.overflow = "";
   };
 
-  if (btnClose) btnClose.addEventListener("click", cerrarModal);
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) cerrarModal();
+  if (btnClose) btnClose.onclick = cerrarModal;
+
+  modal.onclick = (e) => {
+    if (e.target === modal) cerrarModal(e);
+  };
+
+  // Permitir cerrar con la tecla Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("active")) {
+      cerrarModal();
+    }
   });
-}
-
-/* Cargar solo las 3 notas más recientes en la portada */
-async function cargarBlogResumen() {
-  const posts = await fetchCollection("articulos_blog");
-  const cont = $("#blog-resumen-container");
-  if (!cont || !posts.length) return;
-
-  // Tomamos únicamente los últimos 3
-  const ultimos = posts.slice(0, 3);
-
-  cont.innerHTML = ultimos.map(post => `
-    <article class="blog-card">
-      ${post.imagen ? `
-        <div class="blog-card-img">
-          <img src="${post.imagen}" alt="${post.titulo || 'Artículo'}" loading="lazy">
-        </div>
-      ` : ""}
-      <div class="blog-card-body">
-        <div class="blog-meta">
-          <span class="blog-tag">${post.categoria || "Reflexión"}</span>
-          <span class="blog-date">${post.fecha || ""}</span>
-        </div>
-        <h3>${post.titulo || "(Sin título)"}</h3>
-        <p>${post.resumen || ""}</p>
-        <a href="post.html?id=${post.id}" class="btn-leer-post">
-          Leer reflexión <i class="fas fa-arrow-right"></i>
-        </a>
-      </div>
-    </article>
-  `).join("");
 }
 /* ============================================================
    LIBROS
