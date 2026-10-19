@@ -1587,3 +1587,207 @@ html, body {
     font-size: 0.85rem;
   }
 }
+
+
+/* ============================================================
+   SECCIÓN BLOG / BITÁCORA CONSCIENTE
+============================================================ */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 350px));
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.blog-card {
+  background: var(--color-tarjeta, #ffffff);
+  border: 1px solid var(--color-borde, #e8dbc8);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.045);
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--dur-base, 0.4s) var(--ease-out-soft, cubic-bezier(0.22, 1, 0.36, 1)),
+              box-shadow var(--dur-base, 0.4s) var(--ease-out-soft, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.blog-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 18px 35px rgba(74, 37, 90, 0.12);
+}
+
+.blog-card-img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background-color: #f7efe1;
+}
+
+.blog-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.blog-card:hover .blog-card-img img {
+  transform: scale(1.06);
+}
+
+.blog-card-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.blog-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  margin-bottom: 0.8rem;
+}
+
+.blog-tag {
+  background: rgba(180, 159, 188, 0.18);
+  color: var(--color-morado-profundo, #4A255A);
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.blog-date {
+  color: #8c827a;
+}
+
+.blog-card-body h3 {
+  font-family: var(--fuente-titulo, 'Cormorant Garamond', serif);
+  font-size: 1.5rem;
+  color: var(--color-primario, #3B5249);
+  line-height: 1.25;
+  margin-bottom: 0.7rem;
+}
+
+.blog-card-body p {
+  color: #5d554d;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+  flex-grow: 1;
+}
+
+.btn-leer-post {
+  align-self: flex-start;
+  background: transparent;
+  border: none;
+  color: var(--color-acento, #2C88A8);
+  font-family: var(--fuente-cuerpo, 'Montserrat', sans-serif);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0;
+  transition: gap 0.2s ease, color 0.2s ease;
+}
+
+.btn-leer-post:hover {
+  color: var(--color-morado-profundo, #4A255A);
+  gap: 0.7rem;
+}
+
+/* --- Modal de Lectura Editorial --- */
+.blog-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(34, 48, 43, 0.65);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.blog-modal-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+.blog-modal-card {
+  background: var(--color-tarjeta, #FFFDF9);
+  max-width: 780px;
+  width: 100%;
+  max-height: 90vh;
+  border-radius: 24px;
+  overflow-y: auto;
+  position: relative;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--color-borde, #e8dbc8);
+}
+
+.blog-modal-close {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--color-primario, #3B5249);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.blog-modal-close:hover {
+  transform: scale(1.15);
+}
+
+.blog-modal-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.blog-modal-header h2 {
+  font-family: var(--fuente-titulo, 'Cormorant Garamond', serif);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  color: var(--color-primario, #3B5249);
+  margin: 0.8rem 0;
+  line-height: 1.2;
+}
+
+.blog-modal-img-wrap {
+  width: 100%;
+  max-height: 380px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.blog-modal-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-modal-body {
+  font-family: var(--fuente-cuerpo, 'Montserrat', sans-serif);
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: #3f3933;
+  white-space: pre-wrap; 
+}
+
+@media (max-width: 680px) {
+  .blog-modal-card {
+    padding: 2.2rem 1.4rem;
+  }
+}

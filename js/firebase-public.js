@@ -217,7 +217,7 @@ async function cargarProyectos() {
 }
 
 /* ============================================================
-   VIDEOS YOUTUBE (Con extracción automática y miniaturas reales)
+   VIDEOS YOUTUBE 
 ============================================================ */
 function obtenerIdYouTube(urlOId) {
   if (!urlOId) return "";
@@ -255,6 +255,113 @@ async function cargarVideos() {
   }).join("");
 }
 
+
+/* ============================================================
+   BLOG / BITÁCORA
+============================================================ */
+let articulosBlogCache = [];
+
+async function cargarBlog() {
+  articulosBlogCache = await fetchCollection("articulos_blog");
+  const cont = $("#blog-container");
+  if (!cont || !articulosBlogCache.length) return;
+
+  cont.innerHTML = articulosBlogCache.map(post => `
+    <article class="blog-card">
+      ${post.imagen ? `
+        <div class="blog-card-img">
+          <img src="${post.imagen}" alt="${post.titulo || 'Artículo'}" loading="lazy">
+        </div>
+      ` : ""}
+      <div class="blog-card-body">
+        <div class="blog-meta">
+          <span class="blog-tag">${post.categoria || "Reflexión"}</span>
+          <span class="blog-date">${post.fecha || ""}</span>
+        </div>
+        <h3>${post.titulo || "(Sin título)"}</h3>
+        <p>${post.resumen || ""}</p>
+        <button class="btn-leer-post" data-post-id="${post.id}">
+          Leer reflexión <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </article>
+  `).join("");
+
+  setupBlogModalListeners();
+}
+
+function setupBlogModalListeners() {
+  const modal = $("#blog-modal");
+  const btnClose = $("#btn-close-blog");
+  if (!modal) return;
+
+  // Abrir modal con los datos del artículo seleccionado
+  document.querySelectorAll(".btn-leer-post").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.postId;
+      const post = articulosBlogCache.find(p => p.id === id);
+      if (!post) return;
+
+      $("#modal-blog-cat").textContent = post.categoria || "Reflexión";
+      $("#modal-blog-title").textContent = post.titulo || "";
+      $("#modal-blog-date").textContent = post.fecha || "";
+      $("#modal-blog-content").textContent = post.contenido || post.resumen || "";
+
+      const imgWrap = $("#modal-blog-img-wrap");
+      const imgEl = $("#modal-blog-img");
+      if (post.imagen) {
+        imgEl.src = post.imagen;
+        imgWrap.style.display = "block";
+      } else {
+        imgWrap.style.display = "none";
+      }
+
+      modal.classList.add("active");
+      document.body.style.overflow = "hidden";
+    });
+  });
+
+  const cerrarModal = () => {
+    modal.classList.remove("active");
+    document.body.style.overflow = "";
+  };
+
+  if (btnClose) btnClose.addEventListener("click", cerrarModal);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) cerrarModal();
+  });
+}
+
+/* Cargar solo las 3 notas más recientes en la portada */
+async function cargarBlogResumen() {
+  const posts = await fetchCollection("articulos_blog");
+  const cont = $("#blog-resumen-container");
+  if (!cont || !posts.length) return;
+
+  // Tomamos únicamente los últimos 3
+  const ultimos = posts.slice(0, 3);
+
+  cont.innerHTML = ultimos.map(post => `
+    <article class="blog-card">
+      ${post.imagen ? `
+        <div class="blog-card-img">
+          <img src="${post.imagen}" alt="${post.titulo || 'Artículo'}" loading="lazy">
+        </div>
+      ` : ""}
+      <div class="blog-card-body">
+        <div class="blog-meta">
+          <span class="blog-tag">${post.categoria || "Reflexión"}</span>
+          <span class="blog-date">${post.fecha || ""}</span>
+        </div>
+        <h3>${post.titulo || "(Sin título)"}</h3>
+        <p>${post.resumen || ""}</p>
+        <a href="post.html?id=${post.id}" class="btn-leer-post">
+          Leer reflexión <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </article>
+  `).join("");
+}
 /* ============================================================
    LIBROS
 ============================================================ */
@@ -459,6 +566,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarProyectos(),
     cargarVideos(),
     cargarLibros(),
+    cargarBlog(),
     cargarGaleria(),
     cargarRecursos(),
     cargarTestimonios(),

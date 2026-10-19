@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reflexión | Prana para Vos</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .articulo-layout {
+      max-width: 780px;
+      margin: 4rem auto 6rem;
+      padding: 0 1.5rem;
+    }
+    .articulo-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .articulo-header h1 {
+      font-family: var(--fuente-titulo, serif);
+      font-size: clamp(2.3rem, 5vw, 3.4rem);
+      color: var(--color-primario);
+      line-height: 1.2;
+      margin: 1rem 0;
+    }
+    .articulo-cover {
+      width: 100%;
+      max-height: 480px;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 3rem;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    }
+    .articulo-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .articulo-texto {
+      font-size: 1.12rem;
+      line-height: 1.9;
+      color: #3b3631;
+      white-space: pre-wrap;
+    }
+    .btn-volver {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      color: var(--color-primario);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de navegación idéntica a la portada -->
+  <header class="topbar">
+    <nav class="nav-shell">
+      <a href="index.html" class="brand">Prana para Vos</a>
+      <a href="index.html" class="btn btn-primario" style="padding: 0.4rem 1.2rem; font-size: 0.85rem;">
+        ← Volver al inicio
+      </a>
+    </nav>
+  </header>
+
+  <main class="articulo-layout">
+    <a href="index.html#blog" class="btn-volver">← Volver a Bitácora</a>
+    
+    <header class="articulo-header">
+      <span class="blog-tag" id="art-categoria"></span>
+      <h1 id="art-titulo">Cargando reflexión...</h1>
+      <span class="blog-date" id="art-fecha"></span>
+    </header>
+
+    <div class="articulo-cover" id="art-img-wrap" style="display: none;">
+      <img id="art-imagen" src="" alt="">
+    </div>
+
+    <div class="articulo-texto" id="art-contenido"></div>
+  </main>
+
+  <script type="module">
+    import { db } from "./js/firebase-config.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    async function cargarArticulo() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+      if (!id) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      try {
+        const snap = await getDoc(doc(db, "articulos_blog", id));
+        if (!snap.exists()) {
+          document.getElementById("art-titulo").textContent = "Artículo no encontrado";
+          return;
+        }
+
+        const data = snap.data();
+        document.title = `${data.titulo || "Reflexión"} | Prana para Vos`;
+        document.getElementById("art-titulo").textContent = data.titulo || "";
+        document.getElementById("art-categoria").textContent = data.categoria || "Reflexión";
+        document.getElementById("art-fecha").textContent = data.fecha || "";
+        document.getElementById("art-contenido").textContent = data.contenido || data.resumen || "";
+
+        if (data.imagen) {
+          const imgEl = document.getElementById("art-imagen");
+          imgEl.src = data.imagen;
+          document.getElementById("art-img-wrap").style.display = "block";
+        }
+      } catch (err) {
+        console.error("Error al cargar post:", err);
+      }
+    }
+
+    cargarArticulo();
+  </script>
+</body>
+</html>
