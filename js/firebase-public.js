@@ -3,6 +3,8 @@ import {
   doc, getDoc, collection, getDocs, query, orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+console.log("✅ firebase-public.js cargado correctamente");
+
 /* ============================================================
    UTILIDADES
 ============================================================ */
@@ -28,9 +30,14 @@ async function fetchCollection(name) {
     const q = query(collection(db, name), orderBy("orden", "asc"));
     const snap = await getDocs(q);
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  } catch {
-    const snap = await getDocs(collection(db, name));
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (err) {
+    try {
+      const snap = await getDocs(collection(db, name));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (innerErr) {
+      console.error(`❌ Error leyendo colección "${name}" en Firebase:`, innerErr);
+      return [];
+    }
   }
 }
 
@@ -38,7 +45,8 @@ async function fetchConfig(name) {
   try {
     const snap = await getDoc(doc(db, "config", name));
     return snap.exists() ? snap.data() : null;
-  } catch {
+  } catch (err) {
+    console.error(`❌ Error leyendo config "${name}" en Firebase:`, err);
     return null;
   }
 }
@@ -52,7 +60,6 @@ async function descargarPdfDesdeFirestore(enlace, btnEl) {
     btnEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Preparando PDF...`;
     btnEl.style.pointerEvents = "none";
 
-    // Formato: firestore-pdf://pdf_123456789/nombre.pdf
     const sinPrefijo = enlace.replace("firestore-pdf://", "");
     const [fileId, nombreCodificado] = sinPrefijo.split("/");
     const metaSnap = await getDoc(doc(db, "archivos_pdf", fileId));
@@ -94,7 +101,6 @@ async function descargarPdfDesdeFirestore(enlace, btnEl) {
   }
 }
 
-// Escuchar clics en botones con archivos guardados en Firestore
 document.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-firestore-pdf]");
   if (!btn) return;
@@ -165,17 +171,17 @@ async function cargarServicios() {
   cont.innerHTML = servicios.map(s => `
     <div class="card-terapia">
       <div class="card-img">
-        <img src="${s.imagen || ''}" alt="${s.titulo || ''}">
+        <img src="${s.imagen || ''}" alt="${s.titulo || ''}" loading="lazy">
       </div>
       <div class="card-body">
         <h3>${s.titulo || ''}</h3>
         <p>${s.descripcion || ''}</p>
         <div class="etiquetas">
-          ${(s.etiquetas || []).map(e => `<span>${e}</span>`).join("")}
+          ${(Array.isArray(s.etiquetas) ? s.etiquetas : []).map(e => `<span>${e}</span>`).join("")}
         </div>
       </div>
       <div class="card-footer">
-        <button class="btn-descarga">
+        <button type="button" class="btn-descarga">
           ${s.boton || "Ver más"} <i class="fas fa-arrow-right"></i>
         </button>
       </div>
@@ -217,12 +223,12 @@ async function cargarProyectos() {
 }
 
 /* ============================================================
-   VIDEOS YOUTUBE 
+   VIDEOS YOUTUBE
 ============================================================ */
 function obtenerIdYouTube(urlOId) {
   if (!urlOId) return "";
-  const match = urlOId.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
-  return match ? match[1] : urlOId.trim();
+  const match = String(urlOId).match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+  return match ? match[1] : String(urlOId).trim();
 }
 
 async function cargarVideos() {
@@ -256,12 +262,12 @@ async function cargarVideos() {
 }
 
 /* ============================================================
-   BLOG / BITÁCORA 
+   BLOG / BITÁCORA
 ============================================================ */
 let articulosBlogCache = [];
 
 async function cargarBlog() {
-  const cont = $("#blog-container") || $("#blog-resumen-container");
+  const cont = $("#blog-container") \vert{}\vert{} $("#blog-resumen-container");
   if (!cont) return;
 
   articulosBlogCache = await fetchCollection("articulos_blog");
@@ -304,7 +310,6 @@ function setupBlogModalListeners() {
   const btnClose = $("#btn-close-blog");
   if (!modal) return;
 
-  // Abrir modal evitando saltos de scroll
   document.querySelectorAll(".btn-leer-post").forEach(btn => {
     btn.onclick = (e) => {
       e.preventDefault();
@@ -344,18 +349,11 @@ function setupBlogModalListeners() {
   };
 
   if (btnClose) btnClose.onclick = cerrarModal;
-
   modal.onclick = (e) => {
     if (e.target === modal) cerrarModal(e);
   };
-
-  // Permitir cerrar con la tecla Escape
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("active")) {
-      cerrarModal();
-    }
-  });
 }
+
 /* ============================================================
    LIBROS
 ============================================================ */
@@ -378,12 +376,12 @@ async function cargarLibros() {
          </a>`;
 
     const badgeHtml = l.badge
-      ? `<span class="badge">⭐ ${l.badge}</span>` 
+      ? `<span class="badge">⭐ ${l.badge}</span>`
       : "";
 
     return `
       <div class="libro-card">
-        <div class="libro-portada" style="width:100%; max-width:200px; margin:0 auto 1rem; aspect-ratio:3/4; overflow:hidden; border-radius:12px; box-shadow:0 8px 20px ;">
+        <div class="libro-portada" style="width:100%; max-width:200px; margin:0 auto 1rem; aspect-ratio:3/4; overflow:hidden; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.1);">
           <img src="${l.imagen || ""}" alt="${l.titulo || ""}" loading="lazy" style="width:100%; height:100%; object-fit:cover; display:block;">
         </div>
         <div class="libro-body">
@@ -400,7 +398,7 @@ async function cargarLibros() {
 }
 
 /* ============================================================
-  GALERÍA (Con límite de 20 fotos y botón Ver más)
+   GALERÍA (Límite 20 fotos + Botón Ver más)
 ============================================================ */
 async function cargarGaleria() {
   const fotos = await fetchCollection("galeria");
@@ -416,12 +414,11 @@ async function cargarGaleria() {
     </div>
   `;
 
-  // Renderizar las primeras 20 fotos
   const iniciales = fotos.slice(0, limiteInicial);
   cont.innerHTML = iniciales.map(renderItemFoto).join("");
   fotosVisibles = iniciales.length;
 
-  const botonPrevio = $("#btn-galeria-ver-mas");
+  const botonPrevio = $("#wrap-galeria-btn");
   if (botonPrevio) botonPrevio.remove();
 
   if (fotos.length > limiteInicial) {
@@ -442,13 +439,10 @@ async function cargarGaleria() {
     const btnVerMas = document.getElementById("btn-galeria-ver-mas");
     btnVerMas.addEventListener("click", () => {
       const restantes = fotos.slice(fotosVisibles);
-      const htmlRestantes = restantes.map(renderItemFoto).join("");
-      cont.insertAdjacentHTML("beforeend", htmlRestantes);
-
+      cont.insertAdjacentHTML("beforeend", restantes.map(renderItemFoto).join(""));
       if (typeof window.initDynamicListeners === "function") {
         window.initDynamicListeners();
       }
-
       contenedorBoton.remove();
     });
   }
@@ -504,21 +498,56 @@ async function cargarTestimonios() {
 }
 
 /* ============================================================
-   CONTACTO
+   CONTACTO + BOTÓN FLOTANTE DE WHATSAPP SIEMPRE VISIBLE
 ============================================================ */
+function mostrarBotonFlotanteWhatsApp(d = {}) {
+  const floatPrevio = $("#wa-floating-container");
+  if (floatPrevio) floatPrevio.remove();
+
+  const numeroDefault = d?.whatsapp || "5492302661694";
+  const enlaceFloat = d?.whatsapp_grupo ? d.whatsapp_grupo : `https://wa.me/${numeroDefault}`;
+  const etiquetaFloat = d?.whatsapp_grupo_texto || "🎁 Comunidad y Concursos";
+
+  const floatDiv = document.createElement("div");
+  floatDiv.id = "wa-floating-container";
+  floatDiv.style.cssText = "position:fixed; bottom:24px; right:24px; z-index:9999;";
+  floatDiv.innerHTML = `
+    <a href="${enlaceFloat}" target="_blank" rel="noopener" aria-label="WhatsApp"
+       style="display:flex; align-items:center; gap:0.65rem; text-decoration:none; background:#fffdf9; padding:0.45rem 0.5rem 0.45rem 1.1rem; border-radius:999px; box-shadow:0 10px 28px rgba(34,48,43,0.22); border:1px solid rgba(37,211,102,0.4);">
+      <span style="font-size:0.85rem; font-weight:600; color:#3B5249; white-space:nowrap;">${etiquetaFloat}</span>
+      <div style="width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#25D366 0%,#128C7E 100%); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
+        <i class="fab fa-whatsapp"></i>
+      </div>
+    </a>
+  `;
+  document.body.appendChild(floatDiv);
+}
+
 async function cargarContacto() {
+  // Mostrar el botón flotante de inmediato (y actualizarlo cuando responda Firebase)
+  mostrarBotonFlotanteWhatsApp();
+
   const d = await fetchConfig("contacto");
   if (!d) return;
+
+  mostrarBotonFlotanteWhatsApp(d);
 
   setText('[data-cms="contacto-titulo"]', d.titulo);
   setText('[data-cms="contacto-descripcion"]', d.descripcion);
 
+  const textoGrupo = d.whatsapp_grupo_texto || "Unirme al Grupo y Sorteos";
+
   const actions = $('[data-cms="contacto-actions"]');
   if (actions) {
     actions.innerHTML = `
-      <a href="https://wa.me/${d.whatsapp || ''}" target="_blank" class="btn btn-claro">
+      <a href="https://wa.me/${d.whatsapp || ''}" target="_blank" rel="noopener" class="btn btn-claro">
         <i class="fab fa-whatsapp"></i> WhatsApp
       </a>
+      ${d.whatsapp_grupo ? `
+        <a href="${d.whatsapp_grupo}" target="_blank" rel="noopener" class="btn btn-claro" style="background:#25D366; color:#fff; border:none;">
+          <i class="fas fa-gift"></i> ${textoGrupo}
+        </a>
+      ` : ""}
       <a href="mailto:${d.email || ''}" class="btn btn-borde-claro">
         <i class="fas fa-envelope"></i> Email
       </a>
@@ -546,87 +575,6 @@ async function cargarContacto() {
   if (footerIg && d.instagram) footerIg.href = `https://instagram.com/${d.instagram}`;
   const footerYt = $('[data-cms="footer-youtube"]');
   if (footerYt && d.youtube) footerYt.href = `https://youtube.com/@${d.youtube}`;
-}
-
-
-/* ============================================================
-   CONTACTO + BOTÓN DE GRUPO DE WHATSAPP 
-============================================================ */
-async function cargarContacto() {
-  const d = await fetchConfig("contacto");
-  if (!d) return;
-
-  setText('[data-cms="contacto-titulo"]', d.titulo);
-  setText('[data-cms="contacto-descripcion"]', d.descripcion);
-
-  const textoGrupo = d.whatsapp_grupo_texto || "Unirme al Grupo y Sorteos";
-
-  const actions = $('[data-cms="contacto-actions"]');
-  if (actions) {
-    actions.innerHTML = `
-      ${d.whatsapp ? `
-        <a href="https://wa.me/${d.whatsapp}" target="_blank" rel="noopener" class="btn btn-claro">
-          <i class="fab fa-whatsapp"></i> WhatsApp Directo
-        </a>
-      ` : ""}
-      ${d.whatsapp_grupo ? `
-        <a href="${d.whatsapp_grupo}" target="_blank" rel="noopener" class="btn btn-wa-grupo">
-          <i class="fas fa-gift"></i> ${textoGrupo}
-        </a>
-      ` : ""}
-      ${d.email ? `
-        <a href="mailto:${d.email}" class="btn btn-borde-claro">
-          <i class="fas fa-envelope"></i> Email
-        </a>
-      ` : ""}
-    `;
-  }
-
-  const details = $('[data-cms="contacto-details"]');
-  if (details) {
-    details.innerHTML = `
-      <span><i class="fas fa-phone"></i> ${d.telefono || ''}</span>
-      <span><i class="fas fa-map-marker-alt"></i> ${d.ubicacion || ''}</span>
-      <span><i class="fab fa-instagram"></i> @${d.instagram || ''}</span>
-      <span><i class="fab fa-youtube"></i> /${d.youtube || ''}</span>
-    `;
-  }
-
-  const footerEmail = $('[data-cms="footer-email"]');
-  if (footerEmail && d.email) {
-    footerEmail.textContent = d.email;
-    footerEmail.href = `mailto:${d.email}`;
-  }
-  const footerWa = $('[data-cms="footer-whatsapp"]');
-  if (footerWa && d.whatsapp) footerWa.href = `https://wa.me/${d.whatsapp}`;
-  const footerIg = $('[data-cms="footer-instagram"]');
-  if (footerIg && d.instagram) footerIg.href = `https://instagram.com/${d.instagram}`;
-  const footerYt = $('[data-cms="footer-youtube"]');
-  if (footerYt && d.youtube) footerYt.href = `https://youtube.com/@${d.youtube}`;
-
-  // Botón flotante en la esquina inferior derecha
-  const floatPrevio = $("#wa-floating-container");
-  if (floatPrevio) floatPrevio.remove();
-
-  if (d.whatsapp_grupo || d.whatsapp) {
-    const enlaceFloat = d.whatsapp_grupo ? d.whatsapp_grupo : `https://wa.me/${d.whatsapp}`;
-    const etiquetaFloat = d.whatsapp_grupo
-      ? (d.whatsapp_grupo_texto || "🎁 Grupo y Concursos")
-      : "Escribime por WhatsApp";
-
-    const floatDiv = document.createElement("div");
-    floatDiv.id = "wa-floating-container";
-    floatDiv.className = "wa-floating-container";
-    floatDiv.innerHTML = `
-      <a href="${enlaceFloat}" target="_blank" rel="noopener" class="wa-floating-btn" aria-label="WhatsApp">
-        <span class="wa-floating-label">${etiquetaFloat}</span>
-        <div class="wa-floating-icon">
-          <i class="fab fa-whatsapp"></i>
-        </div>
-      </a>
-    `;
-    document.body.appendChild(floatDiv);
-  }
 }
 
 /* ============================================================
