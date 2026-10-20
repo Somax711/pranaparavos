@@ -60,14 +60,16 @@ const SCHEMAS = {
     { name: "imagen",   label: "URL de la imagen", type: "image" }
   ],
   contacto: [
-    { name: "titulo",      label: "Título", type: "text" },
-    { name: "descripcion", label: "Descripción", type: "textarea" },
-    { name: "whatsapp",    label: "WhatsApp (con código país, ej: 5492302661694)", type: "text" },
-    { name: "email",       label: "Email", type: "text" },
-    { name: "telefono",    label: "Teléfono visible", type: "text" },
-    { name: "ubicacion",   label: "Ubicación", type: "text" },
-    { name: "instagram",   label: "Instagram (sin @)", type: "text" },
-    { name: "youtube",     label: "YouTube (handle)", type: "text" }
+    { name: "titulo",               label: "Título", type: "text" },
+    { name: "descripcion",          label: "Descripción", type: "textarea" },
+    { name: "whatsapp",             label: "WhatsApp personal (con código país, ej: 5492302661694)", type: "text" },
+    { name: "whatsapp_grupo",       label: "Enlace del Grupo de WhatsApp (ej: https://chat.whatsapp.com/...)", type: "text" },
+    { name: "whatsapp_grupo_texto", label: "Texto del botón del Grupo (ej: ¡Unite al grupo y participá de sorteos!)", type: "text" },
+    { name: "email",                label: "Email", type: "text" },
+    { name: "telefono",             label: "Teléfono visible", type: "text" },
+    { name: "ubicacion",            label: "Ubicación", type: "text" },
+    { name: "instagram",            label: "Instagram (sin @)", type: "text" },
+    { name: "youtube",              label: "YouTube (handle)", type: "text" }
   ],
   servicios: [
     { name: "titulo",      label: "Título", type: "text" },
@@ -368,7 +370,7 @@ function bindCollectionView(sectionKey) {
 }
 
 /* ============================================================
-   SUBIDA DE ARCHIVOS A FIREBASE (Storage con respaldo en Firestore)
+   SUBIDA DE ARCHIVOS A FIREBASE 
 ============================================================ */
 function fileToDataURL(file) {
   return new Promise((resolve, reject) => {

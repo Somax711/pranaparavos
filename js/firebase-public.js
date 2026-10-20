@@ -256,12 +256,12 @@ async function cargarVideos() {
 }
 
 /* ============================================================
-   BLOG / BITÁCORA (Lectura en Modal sin saltos de página)
+   BLOG / BITÁCORA 
 ============================================================ */
 let articulosBlogCache = [];
 
 async function cargarBlog() {
-  const cont = $("#blog-container") \vert{}\vert{} $("#blog-resumen-container");
+  const cont = $("#blog-container") || $("#blog-resumen-container");
   if (!cont) return;
 
   articulosBlogCache = await fetchCollection("articulos_blog");
@@ -546,6 +546,87 @@ async function cargarContacto() {
   if (footerIg && d.instagram) footerIg.href = `https://instagram.com/${d.instagram}`;
   const footerYt = $('[data-cms="footer-youtube"]');
   if (footerYt && d.youtube) footerYt.href = `https://youtube.com/@${d.youtube}`;
+}
+
+
+/* ============================================================
+   CONTACTO + BOTÓN DE GRUPO DE WHATSAPP 
+============================================================ */
+async function cargarContacto() {
+  const d = await fetchConfig("contacto");
+  if (!d) return;
+
+  setText('[data-cms="contacto-titulo"]', d.titulo);
+  setText('[data-cms="contacto-descripcion"]', d.descripcion);
+
+  const textoGrupo = d.whatsapp_grupo_texto || "Unirme al Grupo y Sorteos";
+
+  const actions = $('[data-cms="contacto-actions"]');
+  if (actions) {
+    actions.innerHTML = `
+      ${d.whatsapp ? `
+        <a href="https://wa.me/${d.whatsapp}" target="_blank" rel="noopener" class="btn btn-claro">
+          <i class="fab fa-whatsapp"></i> WhatsApp Directo
+        </a>
+      ` : ""}
+      ${d.whatsapp_grupo ? `
+        <a href="${d.whatsapp_grupo}" target="_blank" rel="noopener" class="btn btn-wa-grupo">
+          <i class="fas fa-gift"></i> ${textoGrupo}
+        </a>
+      ` : ""}
+      ${d.email ? `
+        <a href="mailto:${d.email}" class="btn btn-borde-claro">
+          <i class="fas fa-envelope"></i> Email
+        </a>
+      ` : ""}
+    `;
+  }
+
+  const details = $('[data-cms="contacto-details"]');
+  if (details) {
+    details.innerHTML = `
+      <span><i class="fas fa-phone"></i> ${d.telefono || ''}</span>
+      <span><i class="fas fa-map-marker-alt"></i> ${d.ubicacion || ''}</span>
+      <span><i class="fab fa-instagram"></i> @${d.instagram || ''}</span>
+      <span><i class="fab fa-youtube"></i> /${d.youtube || ''}</span>
+    `;
+  }
+
+  const footerEmail = $('[data-cms="footer-email"]');
+  if (footerEmail && d.email) {
+    footerEmail.textContent = d.email;
+    footerEmail.href = `mailto:${d.email}`;
+  }
+  const footerWa = $('[data-cms="footer-whatsapp"]');
+  if (footerWa && d.whatsapp) footerWa.href = `https://wa.me/${d.whatsapp}`;
+  const footerIg = $('[data-cms="footer-instagram"]');
+  if (footerIg && d.instagram) footerIg.href = `https://instagram.com/${d.instagram}`;
+  const footerYt = $('[data-cms="footer-youtube"]');
+  if (footerYt && d.youtube) footerYt.href = `https://youtube.com/@${d.youtube}`;
+
+  // Botón flotante en la esquina inferior derecha
+  const floatPrevio = $("#wa-floating-container");
+  if (floatPrevio) floatPrevio.remove();
+
+  if (d.whatsapp_grupo || d.whatsapp) {
+    const enlaceFloat = d.whatsapp_grupo ? d.whatsapp_grupo : `https://wa.me/${d.whatsapp}`;
+    const etiquetaFloat = d.whatsapp_grupo
+      ? (d.whatsapp_grupo_texto || "🎁 Grupo y Concursos")
+      : "Escribime por WhatsApp";
+
+    const floatDiv = document.createElement("div");
+    floatDiv.id = "wa-floating-container";
+    floatDiv.className = "wa-floating-container";
+    floatDiv.innerHTML = `
+      <a href="${enlaceFloat}" target="_blank" rel="noopener" class="wa-floating-btn" aria-label="WhatsApp">
+        <span class="wa-floating-label">${etiquetaFloat}</span>
+        <div class="wa-floating-icon">
+          <i class="fab fa-whatsapp"></i>
+        </div>
+      </a>
+    `;
+    document.body.appendChild(floatDiv);
+  }
 }
 
 /* ============================================================

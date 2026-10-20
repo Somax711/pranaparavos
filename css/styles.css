@@ -1786,6 +1786,96 @@ html, body {
   white-space: pre-wrap; 
 }
 
+/* ============================================================
+   BOTÓN GRUPO DE WHATSAPP Y WIDGET FLOTANTE
+============================================================ */
+.btn-wa-grupo {
+  background: linear-gradient(135deg, #25D366 0%, #1da851 100%);
+  color: #ffffff !important;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-wa-grupo:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 26px rgba(37, 211, 102, 0.45);
+}
+
+/* Contenedor flotante abajo a la derecha */
+.wa-floating-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9990;
+}
+
+.wa-floating-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  background: #fffdf9;
+  padding: 0.45rem 0.5rem 0.45rem 1.1rem;
+  border-radius: 999px;
+  box-shadow: 0 10px 28px rgba(34, 48, 43, 0.18);
+  border: 1px solid rgba(37, 211, 102, 0.35);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.wa-floating-btn:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 14px 34px rgba(37, 211, 102, 0.28);
+}
+
+.wa-floating-label {
+  font-family: var(--fuente-cuerpo, 'Montserrat', sans-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primario, #3B5249);
+  white-space: nowrap;
+}
+
+.wa-floating-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+  animation: waPulse 2.5s infinite;
+}
+
+@keyframes waPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.55); }
+  70%  { box-shadow: 0 0 0 12px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+/* Ajuste en celulares */
+@media (max-width: 600px) {
+  .wa-floating-container {
+    bottom: 16px;
+    right: 16px;
+  }
+  .wa-floating-label {
+    font-size: 0.78rem;
+  }
+  .wa-floating-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.35rem;
+  }
+}
+
 @media (max-width: 680px) {
   .blog-modal-card {
     padding: 2.2rem 1.4rem;
