@@ -1,4 +1,4 @@
-import { db } from "./firebase-config.js";
+﻿import { db } from "./firebase-config.js";
 import {
   doc, getDoc, collection, getDocs, query, orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -267,7 +267,7 @@ async function cargarVideos() {
 let articulosBlogCache = [];
 
 async function cargarBlog() {
-  const cont = $("#blog-container") \vert{}\vert{} $("#blog-resumen-container");
+  const cont = $("#blog-container") || $("#blog-resumen-container");
   if (!cont) return;
 
   articulosBlogCache = await fetchCollection("articulos_blog");
@@ -506,7 +506,7 @@ function mostrarBotonFlotanteWhatsApp(d = {}) {
 
   const numeroDefault = d?.whatsapp || "5492302661694";
   const enlaceFloat = d?.whatsapp_grupo ? d.whatsapp_grupo : `https://wa.me/${numeroDefault}`;
-  const etiquetaFloat = d?.whatsapp_grupo_texto || "🎁 Comunidad y Concursos";
+  const etiquetaFloat = d?.whatsapp_grupo_texto || " Comunidad y Concursos";
 
   const floatDiv = document.createElement("div");
   floatDiv.id = "wa-floating-container";
@@ -524,7 +524,6 @@ function mostrarBotonFlotanteWhatsApp(d = {}) {
 }
 
 async function cargarContacto() {
-  // Mostrar el botón flotante de inmediato (y actualizarlo cuando responda Firebase)
   mostrarBotonFlotanteWhatsApp();
 
   const d = await fetchConfig("contacto");
