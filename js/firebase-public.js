@@ -496,16 +496,17 @@ async function cargarTestimonios() {
     </div>
   `).join("");
 }
-
-/* ============================================================
-   CONTACTO + BOTÓN FLOTANTE DE WHATSAPP SIEMPRE VISIBLE
++9
+45
+1/* ============================================================
+   CONTACTO + BOTÓN FLOTANTE DE WHATSAPP 
 ============================================================ */
 function mostrarBotonFlotanteWhatsApp(d = {}) {
   const floatPrevio = $("#wa-floating-container");
   if (floatPrevio) floatPrevio.remove();
 
   const numeroDefault = d?.whatsapp || "5492302661694";
-  const enlaceFloat = d?.whatsapp_grupo ? d.whatsapp_grupo : `https://wa.me/${numeroDefault}`;
+  const enlaceFloat = d?.whatsapp_grupo ? d.whatsapp_grupo : `https://chat.whatsapp.com/JRIQZBhjQBuCAbaNz2HYwo?s=cl&p=a&mlu=4&ilr=4}`;
   const etiquetaFloat = d?.whatsapp_grupo_texto || " Comunidad y Concursos";
 
   const floatDiv = document.createElement("div");
