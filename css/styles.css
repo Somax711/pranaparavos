@@ -1590,202 +1590,234 @@ html, body {
 
 
 /* ============================================================
-   SECCIÓN BLOG / BITÁCORA CONSCIENTE
+   SECCIÓN UNIFICADA: ALMA DE MAR + BITÁCORA PERSONAL
 ============================================================ */
-.blog-grid {
+.seccion-alma-blog {
+  position: relative;
+  padding: 5rem 1.5rem;
+}
+
+/* Pilares de Alma de Mar como tarjetas horizontales delicadas */
+.alma-pilares-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 350px));
-  gap: 2rem;
-  justify-content: center;
-  margin-top: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.4rem;
+  margin: 2rem auto 3rem;
+  max-width: 1100px;
 }
 
-.blog-card {
-  background: var(--color-tarjeta, #ffffff);
-  border: 1px solid var(--color-borde, #e8dbc8);
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.045);
-  display: flex;
-  flex-direction: column;
-  transition: transform var(--dur-base, 0.4s) var(--ease-out-soft, cubic-bezier(0.22, 1, 0.36, 1)),
-              box-shadow var(--dur-base, 0.4s) var(--ease-out-soft, cubic-bezier(0.22, 1, 0.36, 1));
+.alma-pilares-grid .alma-item {
+  background: rgba(255, 253, 249, 0.88);
+  border: 1px solid rgba(180, 159, 188, 0.35);
+  border-radius: 18px;
+  padding: 1.5rem 1.3rem;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(74, 37, 90, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.blog-card:hover {
-  transform: translateY(-7px);
-  box-shadow: 0 18px 35px rgba(74, 37, 90, 0.12);
+.alma-pilares-grid .alma-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 30px rgba(44, 136, 168, 0.12);
 }
 
-.blog-card-img {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  background-color: #f7efe1;
-}
-
-.blog-card-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.blog-card:hover .blog-card-img img {
-  transform: scale(1.06);
-}
-
-.blog-card-body {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-.blog-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.78rem;
-  margin-bottom: 0.8rem;
-}
-
-.blog-tag {
-  background: rgba(180, 159, 188, 0.18);
-  color: var(--color-morado-profundo, #4A255A);
-  font-weight: 600;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.blog-date {
-  color: #8c827a;
-}
-
-.blog-card-body h3 {
-  font-family: var(--fuente-titulo, 'Cormorant Garamond', serif);
-  font-size: 1.5rem;
-  color: var(--color-primario, #3B5249);
-  line-height: 1.25;
+.alma-pilares-grid .alma-item i {
+  font-size: 1.6rem;
+  color: var(--color-acento, #2C88A8);
   margin-bottom: 0.7rem;
 }
 
-.blog-card-body p {
-  color: #5d554d;
-  font-size: 0.92rem;
-  line-height: 1.6;
-  margin-bottom: 1.2rem;
-  flex-grow: 1;
-}
-
-.btn-leer-post {
-  align-self: flex-start;
-  background: transparent;
-  border: none;
-  color: var(--color-acento, #2C88A8);
-  font-family: var(--fuente-cuerpo, 'Montserrat', sans-serif);
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0;
-  transition: gap 0.2s ease, color 0.2s ease;
-}
-
-.btn-leer-post:hover {
-  color: var(--color-morado-profundo, #4A255A);
-  gap: 0.7rem;
-}
-
-/* --- Modal de Lectura Editorial --- */
-.blog-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(34, 48, 43, 0.65);
-  backdrop-filter: blur(8px);
-  z-index: 9999;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.blog-modal-overlay.active {
-  display: flex;
-  opacity: 1;
-}
-
-.blog-modal-card {
-  background: var(--color-tarjeta, #FFFDF9);
-  max-width: 780px;
-  width: 100%;
-  max-height: 90vh;
-  border-radius: 24px;
-  overflow-y: auto;
-  position: relative;
-  padding: 3rem 2.5rem;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--color-borde, #e8dbc8);
-}
-
-.blog-modal-close {
-  position: absolute;
-  top: 1.2rem;
-  right: 1.5rem;
-  background: transparent;
-  border: none;
-  font-size: 2rem;
-  line-height: 1;
-  color: var(--color-primario, #3B5249);
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.blog-modal-close:hover {
-  transform: scale(1.15);
-}
-
-.blog-modal-header {
+/* Divisor ornamental entre los pilares y los escritos */
+.alma-blog-divider {
   text-align: center;
-  margin-bottom: 2rem;
+  margin: 3rem auto 2rem;
+  position: relative;
+  max-width: 650px;
 }
 
-.blog-modal-header h2 {
+.alma-blog-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(74, 37, 90, 0.25), transparent);
+}
+
+.alma-blog-divider span {
+  position: relative;
+  background: var(--color-fondo, #F5EEF6);
+  padding: 0.4rem 1.4rem;
   font-family: var(--fuente-titulo, 'Cormorant Garamond', serif);
-  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-size: 1.35rem;
+  font-style: italic;
+  color: var(--color-morado-profundo, #4A255A);
+  border-radius: 999px;
+}
+
+/* Filtros por categoría */
+.blog-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 2.2rem;
+}
+
+.blog-filtro-pill {
+  background: #fffdf9;
+  border: 1px solid rgba(180, 159, 188, 0.45);
   color: var(--color-primario, #3B5249);
-  margin: 0.8rem 0;
-  line-height: 1.2;
+  padding: 0.4rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
-.blog-modal-img-wrap {
-  width: 100%;
-  max-height: 380px;
-  border-radius: 16px;
+.blog-filtro-pill.active,
+.blog-filtro-pill:hover {
+  background: var(--color-morado-profundo, #4A255A);
+  color: #ffffff;
+  border-color: var(--color-morado-profundo, #4A255A);
+}
+
+/* Tarjeta Destacada (Último escrito de Mariela) */
+.blog-editorial-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.blog-card-destacada {
+  display: grid;
+  grid-template-columns: 1.05fr 1.2fr;
+  background: #fffdf9;
+  border-radius: 24px;
   overflow: hidden;
-  margin-bottom: 2rem;
+  border: 1px solid rgba(180, 159, 188, 0.4);
+  box-shadow: 0 16px 40px rgba(74, 37, 90, 0.08);
+  margin-bottom: 2.5rem;
 }
 
-.blog-modal-img-wrap img {
-  width: 100%;
+.blog-card-destacada .blog-card-img {
+  aspect-ratio: auto;
+  min-height: 320px;
   height: 100%;
-  object-fit: cover;
 }
 
-.blog-modal-body {
-  font-family: var(--fuente-cuerpo, 'Montserrat', sans-serif);
-  font-size: 1.05rem;
-  line-height: 1.85;
-  color: #3f3933;
-  white-space: pre-wrap; 
+.blog-card-destacada .blog-card-body {
+  padding: 2.4rem 2.2rem;
+  justify-content: center;
 }
 
+.blog-card-destacada h3 {
+  font-size: clamp(1.7rem, 3vw, 2.3rem);
+  margin-bottom: 0.5rem;
+}
+
+.blog-card-sub {
+  font-family: var(--fuente-titulo, 'Cormorant Garamond', serif);
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--color-acento, #2C88A8);
+  margin-bottom: 0.9rem !important;
+}
+
+.blog-card-mini-quote {
+  border-left: 3px solid var(--color-lila-suave, #B49FBC);
+  padding: 0.4rem 0 0.4rem 1rem;
+  margin: 0 0 1rem;
+  font-style: italic;
+  color: #5a4b60;
+  font-size: 0.95rem;
+}
+
+.blog-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(180, 159, 188, 0.35);
+}
+
+.blog-firma-mini,
+.blog-reading-mini {
+  font-family: var(--fuente-titulo, 'Cormorant Garamond', serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: #7c7269;
+}
+
+/* Grilla secundaria para el resto de escritos */
+.blog-grid-secundaria {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 1.8rem;
+}
+
+/* Mejoras en el Modal de lectura íntima */
+.blog-modal-subtitle {
+  font-family: var(--fuente-titulo, 'Cormorant Garamond', serif);
+  font-size: 1.35rem;
+  font-style: italic;
+  color: var(--color-acento, #2C88A8);
+  margin-bottom: 0.6rem;
+}
+
+.blog-modal-meta-row {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+  font-size: 0.85rem;
+  color: #8c827a;
+}
+
+.blog-modal-quote {
+  background: rgba(180, 159, 188, 0.12);
+  border-left: 4px solid var(--color-morado-profundo, #4A255A);
+  padding: 1.2rem 1.5rem;
+  border-radius: 0 14px 14px 0;
+  font-family: var(--fuente-titulo, 'Cormorant Garamond', serif);
+  font-size: 1.4rem;
+  font-style: italic;
+  color: var(--color-morado-profundo, #4A255A);
+  margin: 0 0 2rem;
+  line-height: 1.45;
+}
+
+.blog-modal-footer {
+  margin-top: 2.8rem;
+  padding-top: 1.8rem;
+  border-top: 1px solid rgba(180, 159, 188, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  text-align: center;
+}
+
+.blog-firma {
+  font-family: var(--fuente-titulo, 'Cormorant Garamond', serif);
+  font-size: 1.6rem;
+  font-style: italic;
+  color: var(--color-morado-profundo, #4A255A);
+}
+
+@media (max-width: 820px) {
+  .blog-card-destacada {
+    grid-template-columns: 1fr;
+  }
+  .blog-card-destacada .blog-card-img {
+    min-height: 220px;
+    max-height: 260px;
+  }
+  .blog-card-destacada .blog-card-body {
+    padding: 1.6rem 1.4rem;
+  }
+}
 /* ============================================================
    BOTÓN GRUPO DE WHATSAPP Y WIDGET FLOTANTE
 ============================================================ */

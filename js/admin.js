@@ -25,7 +25,8 @@ const SECTIONS = {
   hero:        { title: "Hero",         desc: "Edita la sección principal del sitio", type: "single", doc: "hero" },
   sobre_mi:    { title: "Sobre mí",     desc: "Edita tu presentación personal",       type: "single", doc: "sobre_mi" },
   servicios:   { title: "Servicios",    desc: "Tarjetas de Prana para Vos",           type: "collection", col: "servicios" },
-  alma_items:  { title: "Alma de Mar",  desc: "Ítems de gestión cultural",            type: "collection", col: "alma_items" },
+  alma_items:  { title: "Pilares Alma de Mar", desc: "Ejes culturales que acompañan tu bitácora", type: "collection", col: "alma_items" },
+  blog:        { title: "Alma de Mar · Blog",  desc: "Espacio personal de escritura y reflexiones de Mariela", type: "collection", col: "articulos_blog" },
   proyectos:   { title: "Proyectos",    desc: "Proyectos destacados",                 type: "collection", col: "proyectos" },
   videos:      { title: "Videos",       desc: "Videos de YouTube",                    type: "collection", col: "videos" },
   libros:      { title: "Libros",       desc: "Libros publicados y en preparación",   type: "collection", col: "libros" },
@@ -120,6 +121,18 @@ const SCHEMAS = {
     { name: "icono",       label: "Icono (FontAwesome)", type: "text", default: "fa-download" },
     { name: "enlace",      label: "Archivo descargable (Subir PDF o pegar enlace)", type: "file", default: "" },
     { name: "orden",       label: "Orden", type: "number", default: 0 }
+  ],
+  blog: [
+    { name: "titulo",    label: "Título del escrito o reflexión", type: "text" },
+    { name: "subtitulo", label: "Subtítulo o bajada íntima (opcional)", type: "text" },
+    { name: "categoria", label: "Categoría (ej: Alma de Mar, Vivencias, Poesía, Reflexiones)", type: "text", default: "Alma de Mar" },
+    { name: "fecha",     label: "Fecha o momento (ej: Octubre 2026 · Mar del Plata)", type: "text" },
+    { name: "imagen",    label: "Fotografía o arte que acompaña el texto", type: "image" },
+    { name: "cita",      label: "Frase o verso destacado del texto (aparecerá resaltado)", type: "textarea" },
+    { name: "resumen",   label: "Breve introducción (se ve en la vista previa de la web)", type: "textarea" },
+    { name: "contenido", label: "Texto completo (escribe con libertad, respeta todos tus párrafos y espacios)", type: "textarea" },
+    { name: "firma",     label: "Firma al pie del escrito", type: "text", default: "Con amor, Mariela — Alma de Mar" },
+    { name: "orden",     label: "Orden de aparición (1 = primero)", type: "number", default: 1 }
   ]
 };
 

@@ -2,29 +2,23 @@
 import {
   doc, getDoc, collection, getDocs, query, orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-console.log("✅ firebase-public.js cargado correctamente");
-
+console.log(" firebase-public.js cargado correctamente");
 /* ============================================================
    UTILIDADES
 ============================================================ */
 const $ = (sel) => document.querySelector(sel);
-
 function setText(selector, value) {
   const el = typeof selector === "string" ? $(selector) : selector;
   if (el && value != null && value !== "") el.textContent = value;
 }
-
 function setHTML(selector, value) {
   const el = typeof selector === "string" ? $(selector) : selector;
   if (el && value != null && value !== "") el.innerHTML = value;
 }
-
 function setAttr(selector, attr, value) {
   const el = typeof selector === "string" ? $(selector) : selector;
   if (el && value != null && value !== "") el.setAttribute(attr, value);
 }
-
 async function fetchCollection(name) {
   try {
     const q = query(collection(db, name), orderBy("orden", "asc"));
@@ -35,18 +29,17 @@ async function fetchCollection(name) {
       const snap = await getDocs(collection(db, name));
       return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     } catch (innerErr) {
-      console.error(`❌ Error leyendo colección "${name}" en Firebase:`, innerErr);
+      console.error(` Error leyendo colección "${name}" en Firebase:`, innerErr);
       return [];
     }
   }
 }
-
 async function fetchConfig(name) {
   try {
     const snap = await getDoc(doc(db, "config", name));
     return snap.exists() ? snap.data() : null;
   } catch (err) {
-    console.error(`❌ Error leyendo config "${name}" en Firebase:`, err);
+    console.error(` Error leyendo config "${name}" en Firebase:`, err);
     return null;
   }
 }
@@ -59,27 +52,22 @@ async function descargarPdfDesdeFirestore(enlace, btnEl) {
   try {
     btnEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Preparando PDF...`;
     btnEl.style.pointerEvents = "none";
-
     const sinPrefijo = enlace.replace("firestore-pdf://", "");
     const [fileId, nombreCodificado] = sinPrefijo.split("/");
     const metaSnap = await getDoc(doc(db, "archivos_pdf", fileId));
     if (!metaSnap.exists()) throw new Error("El archivo no se encontró en Firebase.");
-
     const meta = metaSnap.data();
     const totalChunks = meta.totalChunks || 0;
     let dataUrlCompleta = "";
-
     for (let i = 0; i < totalChunks; i++) {
       const partSnap = await getDoc(doc(db, "archivos_pdf", `${fileId}_part_${i}`));
       if (partSnap.exists()) {
         dataUrlCompleta += partSnap.data().data;
       }
     }
-
     const res = await fetch(dataUrlCompleta);
     const blob = await res.blob();
     const blobUrl = URL.createObjectURL(blob);
-
     const a = document.createElement("a");
     a.href = blobUrl;
     a.download = decodeURIComponent(nombreCodificado || meta.nombre || "libro.pdf");
@@ -87,7 +75,6 @@ async function descargarPdfDesdeFirestore(enlace, btnEl) {
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
-
     btnEl.innerHTML = `<i class="fas fa-check"></i> ¡Descargado!`;
     setTimeout(() => {
       btnEl.innerHTML = textoOriginal;
@@ -100,7 +87,6 @@ async function descargarPdfDesdeFirestore(enlace, btnEl) {
     btnEl.style.pointerEvents = "auto";
   }
 }
-
 document.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-firestore-pdf]");
   if (!btn) return;
@@ -114,14 +100,11 @@ document.addEventListener("click", (e) => {
 async function cargarHero() {
   const d = await fetchConfig("hero");
   if (!d) return;
-
   setText('[data-cms="hero-eyebrow"]', d.eyebrow);
-
   if (d.titulo || d.titulo_span) {
     setHTML('[data-cms="hero-titulo"]',
       `${d.titulo || ""}${d.titulo_span ? ` <span>${d.titulo_span}</span>` : ""}`);
   }
-
   setText('[data-cms="hero-descripcion"]', d.descripcion);
 
   const actions = $('[data-cms="hero-actions"]');
@@ -150,7 +133,6 @@ async function cargarHero() {
 async function cargarSobreMi() {
   const d = await fetchConfig("sobre_mi");
   if (!d) return;
-
   setText('[data-cms="sobre-eyebrow"]', d.eyebrow);
   setText('[data-cms="sobre-cita"]', d.cita);
   setText('[data-cms="sobre-p1"]', d.p1);
@@ -167,7 +149,6 @@ async function cargarServicios() {
   const servicios = await fetchCollection("servicios");
   const cont = $("#servicios-container");
   if (!cont || !servicios.length) return;
-
   cont.innerHTML = servicios.map(s => `
     <div class="card-terapia">
       <div class="card-img">
@@ -230,17 +211,14 @@ function obtenerIdYouTube(urlOId) {
   const match = String(urlOId).match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
   return match ? match[1] : String(urlOId).trim();
 }
-
 async function cargarVideos() {
   const videos = await fetchCollection("videos");
   const cont = $("#videos-container");
   if (!cont || !videos.length) return;
-
   cont.innerHTML = videos.map(v => {
     const videoId = obtenerIdYouTube(v.video_id);
     const urlVideo = `https://www.youtube.com/watch?v=${videoId}`;
     const thumbUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-
     return `
       <div class="youtube-card">
         <a href="${urlVideo}" target="_blank" rel="noopener" class="yt-thumb" aria-label="Ver video en YouTube">
@@ -262,16 +240,13 @@ async function cargarVideos() {
 }
 
 /* ============================================================
-   BLOG / BITÁCORA
+   BLOG / BITÁCORA 
 ============================================================ */
 let articulosBlogCache = [];
-
 async function cargarBlog() {
   const cont = $("#blog-container") || $("#blog-resumen-container");
   if (!cont) return;
-
   articulosBlogCache = await fetchCollection("articulos_blog");
-
   if (!articulosBlogCache.length) {
     cont.innerHTML = `
       <div style="text-align:center; padding:2rem; grid-column:1/-1; color:#8c827a;">
@@ -280,7 +255,6 @@ async function cargarBlog() {
     `;
     return;
   }
-
   cont.innerHTML = articulosBlogCache.map(post => `
     <article class="blog-card">
       ${post.imagen ? `
@@ -301,7 +275,6 @@ async function cargarBlog() {
       </div>
     </article>
   `).join("");
-
   setupBlogModalListeners();
 }
 
@@ -309,7 +282,6 @@ function setupBlogModalListeners() {
   const modal = $("#blog-modal");
   const btnClose = $("#btn-close-blog");
   if (!modal) return;
-
   document.querySelectorAll(".btn-leer-post").forEach(btn => {
     btn.onclick = (e) => {
       e.preventDefault();
@@ -349,9 +321,16 @@ function setupBlogModalListeners() {
   };
 
   if (btnClose) btnClose.onclick = cerrarModal;
+
   modal.onclick = (e) => {
     if (e.target === modal) cerrarModal(e);
   };
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("active")) {
+      cerrarModal();
+    }
+  });
 }
 
 /* ============================================================
@@ -398,7 +377,7 @@ async function cargarLibros() {
 }
 
 /* ============================================================
-   GALERÍA (Límite 20 fotos + Botón Ver más)
+   GALERÍA 
 ============================================================ */
 async function cargarGaleria() {
   const fotos = await fetchCollection("galeria");
@@ -427,15 +406,12 @@ async function cargarGaleria() {
     contenedorBoton.style.textAlign = "center";
     contenedorBoton.style.marginTop = "2.5rem";
     contenedorBoton.style.width = "100%";
-
     contenedorBoton.innerHTML = `
       <button id="btn-galeria-ver-mas" class="btn btn-primario" style="cursor:pointer; padding:0.7rem 2rem;">
         <i class="fas fa-plus"></i> Ver más fotos (${fotos.length - fotosVisibles} restantes)
       </button>
     `;
-
     cont.parentNode.insertBefore(contenedorBoton, cont.nextSibling);
-
     const btnVerMas = document.getElementById("btn-galeria-ver-mas");
     btnVerMas.addEventListener("click", () => {
       const restantes = fotos.slice(fotosVisibles);
@@ -468,7 +444,7 @@ async function cargarRecursos() {
         : `<a href="${enlace}" target="_blank" rel="noopener" download class="btn btn-acento" style="margin-top:0.8rem; padding:0.4rem 1.2rem; font-size:0.8rem;">
              Descargar <i class="fas fa-download"></i>
            </a>`;
-    }
+        }
 
     return `
       <div class="retiro-card">
@@ -496,9 +472,8 @@ async function cargarTestimonios() {
     </div>
   `).join("");
 }
-+9
-45
-1/* ============================================================
+
+/* ============================================================
    CONTACTO + BOTÓN FLOTANTE DE WHATSAPP 
 ============================================================ */
 function mostrarBotonFlotanteWhatsApp(d = {}) {
@@ -506,7 +481,7 @@ function mostrarBotonFlotanteWhatsApp(d = {}) {
   if (floatPrevio) floatPrevio.remove();
 
   const numeroDefault = d?.whatsapp || "5492302661694";
-  const enlaceFloat = d?.whatsapp_grupo ? d.whatsapp_grupo : `https://chat.whatsapp.com/JRIQZBhjQBuCAbaNz2HYwo?s=cl&p=a&mlu=4&ilr=4}`;
+  const enlaceFloat = d?.whatsapp_grupo ? d.whatsapp_grupo : `https://chat.whatsapp.com/JRIQZBhjQBuCAbaNz2HYwo?s=cl&p=a&mlu=4&ilr=4`;
   const etiquetaFloat = d?.whatsapp_grupo_texto || " Comunidad y Concursos";
 
   const floatDiv = document.createElement("div");
@@ -526,17 +501,12 @@ function mostrarBotonFlotanteWhatsApp(d = {}) {
 
 async function cargarContacto() {
   mostrarBotonFlotanteWhatsApp();
-
   const d = await fetchConfig("contacto");
   if (!d) return;
-
   mostrarBotonFlotanteWhatsApp(d);
-
   setText('[data-cms="contacto-titulo"]', d.titulo);
   setText('[data-cms="contacto-descripcion"]', d.descripcion);
-
   const textoGrupo = d.whatsapp_grupo_texto || "Unirme al Grupo y Sorteos";
-
   const actions = $('[data-cms="contacto-actions"]');
   if (actions) {
     actions.innerHTML = `

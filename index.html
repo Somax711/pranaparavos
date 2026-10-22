@@ -88,24 +88,56 @@
         </div>
       </div>
     </section>
+<!-- ============================================================
+     SECCIÓN INTEGRADA: ALMA DE MAR & BITÁCORA DE MARIELA
+============================================================ -->
+<section class="section seccion-alma-blog" id="alma-de-mar">
+  <div class="container" id="blog">
+    <!-- Cabecera -->
+    <div class="section-heading alma-blog-heading">
+      <p class="eyebrow">Espacio personal y gestión cultural</p>
+      <h2>Alma de Mar · <span>Bitácora de Mariela</span></h2>
+      <p>Un refugio donde el arte, la palabra, la gestión cultural y mis sentires se encuentran para compartir el camino.</p>
+    </div>
 
-    <!-- ===== ALMA DE MAR ===== -->
-    <section class="seccion" id="alma-de-mar">
-      <div class="container">
-        <div class="section-heading">
-          <span class="eyebrow">Alma de Mar</span>
-          <h2>Laboratorio de proyectos <span>culturales, artísticos y comunitarios</span></h2>
-          <p>Escucho, comprendo, imagino junto, diseño estrategias y camino al lado para que cada idea encuentre su forma de hacerse real.</p>
-        </div>
-        <div class="alma-grid" id="alma-container">
-          <!-- Cargado desde Firestore -->
-        </div>
-        <h3 style="text-align:center; margin-top:3rem; font-family:var(--fuente-titulo); color:var(--color-primario);">Proyectos destacados</h3>
-        <div class="proyectos-destacados" id="proyectos-container">
-          <!-- Cargado desde Firestore -->
-        </div>
-      </div>
-    </section>
+    <!-- 1. Pilares de Alma de Mar -->
+    <div class="alma-pilares-grid" id="alma-container"></div>
+
+    <!-- Divisor -->
+    <div class="alma-blog-divider">
+      <span>✦ Mis escritos, sentires y reflexiones ✦</span>
+    </div>
+
+    <!-- Filtros de categorías -->
+    <div class="blog-filtros" id="blog-filtros"></div>
+
+    <!-- 2. Contenedor de los escritos del Blog -->
+    <div class="blog-editorial-layout" id="blog-container"></div>
+  </div>
+</section>
+
+<div style="text-align: center; margin-top: 3.5rem; margin-bottom: 1rem;">
+      <a href="blog.html" class="btn btn-primario" style="padding: 0.8rem 2.2rem; font-size: 1.05rem;">
+        <i class="fas fa-book-open"></i> Leer la bitácora completa
+      </a>
+    </div>
+
+  </div>
+</section>
+
+    <div class="blog-modal-img-wrap" id="modal-blog-img-wrap" style="display:none;">
+      <img id="modal-blog-img" src="" alt="">
+    </div>
+    <div class="blog-modal-body" id="modal-blog-content"></div>
+
+    <div class="blog-modal-footer">
+      <p class="blog-firma" id="modal-blog-firma">Con amor, Mariela</p>
+      <a href="#" id="modal-blog-wa-share" target="_blank" rel="noopener" class="btn btn-borde" style="font-size:0.82rem; padding:0.45rem 1.1rem;">
+        <i class="fab fa-whatsapp"></i> Contarle a Mariela qué te pareció este escrito
+      </a>
+    </div>
+  </div>
+</div>
 
     <!-- ===== YOUTUBE ===== -->
     <section class="seccion seccion-par" id="youtube">
@@ -127,22 +159,7 @@
     </section>
 
 
-  <!-- SECCIÓN BLOG COMPACTA -->
-
-<section class="section seccion-blog" id="blog">
-  <div class="section-heading">
-    <p class="eyebrow">Bitácora Consciente</p>
-    <h2>Palabras del <span>Alma</span></h2>
-    <p>Lecturas y herramientas para acompañar tus procesos interiores.</p>
-  </div>
-  <div class="blog-grid" id="blog-resumen-container"></div>
-
-  <div style="text-align: center; margin-top: 3rem;">
-    <a href="blog.html" class="btn btn-primario" style="padding: 0.8rem 2.2rem;">
-      Explorar todas las reflexiones <i class="fas fa-arrow-right"></i>
-    </a>
-  </div>
-</section>
+ 
 
     <!-- ===== LIBROS ===== -->
     <section class="seccion" id="libros">
@@ -208,12 +225,14 @@
         <div class="cta-actions" data-cms="contacto-actions">
           <a href="https://wa.me/5492302661694" target="_blank" class="btn btn-claro"><i class="fab fa-whatsapp"></i> WhatsApp</a>
           <a href="mailto:pranaparavos@gmail.com" class="btn btn-borde-claro"><i class="fas fa-envelope"></i> Email</a>
+           
         </div>
         <div class="cta-details" data-cms="contacto-details">
           <span><i class="fas fa-phone"></i> +54 9 2302 661694</span>
           <span><i class="fas fa-map-marker-alt"></i> General Pico, La Pampa</span>
+          <span><a href="https://www.instagram.com/almademar_u" target="_blank"><i class="fab fa-instagram"></i> @almademar_u</a></span>
           <span><i class="fab fa-instagram"></i> @pranaparavos</span>
-          <span><i class="fab fa-youtube"></i> /pranaparavos</span>
+          <span><a href="https://youtube.com/@pranaparavos" target="_blank"><i class="fab fa-youtube"></i> /pranaparavos</a></span>
         </div>
       </div>
     </section>
