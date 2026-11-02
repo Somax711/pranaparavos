@@ -482,7 +482,7 @@ function mostrarBotonFlotanteWhatsApp(d = {}) {
 
   const numeroDefault = d?.whatsapp || "5492302661694";
   const enlaceFloat = d?.whatsapp_grupo ? d.whatsapp_grupo : `https://chat.whatsapp.com/JRIQZBhjQBuCAbaNz2HYwo?s=cl&p=a&mlu=4&ilr=4`;
-  const etiquetaFloat = d?.whatsapp_grupo_texto || " Comunidad y Concursos";
+  const etiquetaFloat = d?.whatsapp_grupo_texto || " Comunidad y Regalos";
 
   const floatDiv = document.createElement("div");
   floatDiv.id = "wa-floating-container";

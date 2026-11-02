@@ -332,7 +332,7 @@ function renderItemRow(sectionKey, item) {
   const imgField   = schema.find(f => f.type === "image");
   const iconField  = schema.find(f => f.name === "icono");
 
-  // Si no tiene título (caso de Galería), usamos el texto alternativo o el orden
+
   let title = "(Sin título)";
   if (titleField && item[titleField.name]) {
     title = item[titleField.name];
@@ -406,7 +406,7 @@ async function subirArchivoAFirebase(file, folder, onProgress) {
     console.warn("Firebase Storage no disponible, guardando PDF directamente en Firestore...", storageErr.message);
   }
 
-  // 2. Respaldo automático en Firebase Firestore 
+  //  Respaldo automático en Firebase Firestore 
   const dataUrl = await fileToDataURL(file);
   const chunkSize = 700000; 
   const totalChunks = Math.ceil(dataUrl.length / chunkSize);
